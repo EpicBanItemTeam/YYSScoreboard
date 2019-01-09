@@ -69,11 +69,12 @@ public class YysScoreBoard {
         ScoreBoardConfig.init();
     }
 
+    private Task updateTask;
+
     @Listener
     public void onStarted(GameStartedServerEvent event) {
         Sponge.getCommandManager().register(this, YysScoreBoardCommand.YYSSB, "yyssb", "yysscoreboard");
-        Task.builder().name("YYSScoreboard - update score board").execute(() -> Sponge.getServer().getOnlinePlayers()
-                .forEach(ScoreBoardConfig::setPlayerScoreBoard)).intervalTicks(PluginConfig.getUpdateTick()).async().submit(this);
+        updateTaskSubmit();
         hook();
         try {
             if (!Sponge.getMetricsConfigManager().areMetricsEnabled(this)) {
@@ -111,6 +112,22 @@ public class YysScoreBoard {
         PluginConfig.reload();
         ScoreBoardConfig.reload();
         Sponge.getServer().getOnlinePlayers().forEach(ScoreBoardConfig::setPlayerScoreBoard);
+        if(updateTask != null) {
+            updateTask.cancel();
+        }
+        updateTaskSubmit();
+    }
+
+    private void updateTaskSubmit() {
+        Task.Builder builder = Task.builder();
+        if (PluginConfig.asyncUpdate) {
+            builder.async();
+        }
+        if(PluginConfig.updateTick > 0) {
+            builder.intervalTicks(PluginConfig.updateTick);
+        }
+        updateTask = builder.name("YYSScoreboard - update score board").execute(() -> Sponge.getServer().getOnlinePlayers()
+                .forEach(ScoreBoardConfig::setPlayerScoreBoard)).async().submit(this);
     }
 
     private void hook() {

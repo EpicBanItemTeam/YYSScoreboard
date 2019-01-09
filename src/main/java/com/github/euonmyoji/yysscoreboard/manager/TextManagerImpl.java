@@ -1,8 +1,8 @@
 package com.github.euonmyoji.yysscoreboard.manager;
 
+import com.github.euonmyoji.yysscoreboard.util.Util;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
 import javax.annotation.Nullable;
 
@@ -16,7 +16,7 @@ public class TextManagerImpl implements TextManager {
         if (s == null) {
             return Text.EMPTY;
         }
-        return TextSerializers.FORMATTING_CODE.deserialize(s);
+        return Util.toText(s);
     }
 
     private TextManagerImpl() {

@@ -1,6 +1,7 @@
 package com.github.euonmyoji.yysscoreboard.manager;
 
 import com.github.euonmyoji.yysscoreboard.configuration.PluginConfig;
+import com.github.euonmyoji.yysscoreboard.util.Util;
 import me.rojo8399.placeholderapi.PlaceholderService;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -25,11 +26,13 @@ public class PlaceHolderManager implements TextManager {
 
     @Override
     public Text toText(String s, @Nullable Player p) {
-        if(s == null) {
+        if (s == null) {
             return Text.EMPTY;
         }
-        return PluginConfig.isStaticMode ? service.replacePlaceholders(s, null, null)
-                : service.replacePlaceholders(s, p, p);
+        double tps = Sponge.getServer().getTicksPerSecond();
+        s = s.replace("%server_tps%", tps == 20.0 ? "20.0" : String.format("%.2f", tps));
+        return PluginConfig.isStaticMode ? service.replacePlaceholders(Util.toText(s), null, null)
+                : service.replacePlaceholders(Util.toText(s), p, p);
     }
 
     private PlaceHolderManager() {

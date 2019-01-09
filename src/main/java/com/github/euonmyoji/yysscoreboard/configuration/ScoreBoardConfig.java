@@ -90,7 +90,6 @@ public final class ScoreBoardConfig {
         }
         setScoreBoard(sb, p);
         p.setScoreboard(sb);
-        noClear.add(p.getUniqueId());
     }
 
     private static void setScoreBoard(Scoreboard sb, Player p) {
@@ -102,9 +101,10 @@ public final class ScoreBoardConfig {
         objective = setObjective(objective, p);
         if (shouldAdd) {
             sb.addObjective(objective);
+            sb.updateDisplaySlot(objective, DisplaySlots.SIDEBAR);
         }
-        sb.updateDisplaySlot(objective, DisplaySlots.SIDEBAR);
     }
+
 
     private static Objective setObjective(@Nullable Objective objective, Player p) {
         if (objective == null) {
@@ -118,6 +118,7 @@ public final class ScoreBoardConfig {
         Map<Text, Score> map = objective.getScores();
         if (!noClear.contains(p.getUniqueId())) {
             map.values().forEach(objective::removeScore);
+            noClear.add(p.getUniqueId());
             map = null;
         }
         if (hasSameScore && map != null) {
