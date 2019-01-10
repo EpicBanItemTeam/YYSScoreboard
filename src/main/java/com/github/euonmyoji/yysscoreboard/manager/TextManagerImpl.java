@@ -16,6 +16,7 @@ public class TextManagerImpl implements TextManager {
         if (s == null) {
             return Text.EMPTY;
         }
+        s = Util.replaceTPS(s);
         return Util.toText(s);
     }
 

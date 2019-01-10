@@ -29,8 +29,7 @@ public class PlaceHolderManager implements TextManager {
         if (s == null) {
             return Text.EMPTY;
         }
-        double tps = Sponge.getServer().getTicksPerSecond();
-        s = s.replace("%server_tps%", tps == 20.0 ? "20.0" : String.format("%.2f", tps));
+        s = Util.replaceTPS(s);
         return PluginConfig.isStaticMode ? service.replacePlaceholders(Util.toText(s), null, null)
                 : service.replacePlaceholders(Util.toText(s), p, p);
     }

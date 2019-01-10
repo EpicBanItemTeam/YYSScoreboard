@@ -27,6 +27,7 @@ import org.spongepowered.api.text.Text;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+//https://api.github.com/repos/euOnmyoji/YYSScoreboard/releases
 
 /**
  * @author yinyangshi
@@ -98,12 +99,13 @@ public class YysScoreBoard {
     @Listener
     public void onStopping(GameStoppingServerEvent event) {
         if (PluginConfig.isStaticMode) {
-            ScoreBoardConfig.getStaticScoreBoard().getObjectives()
-                    .forEach(objective -> ScoreBoardConfig.getStaticScoreBoard().removeObjective(objective));
+            ScoreBoardConfig.getStaticScoreBoard().getObjective(ScoreBoardConfig.NAME)
+                    .ifPresent(objective -> ScoreBoardConfig.getStaticScoreBoard().removeObjective(objective));
         }
         if (!PluginConfig.isStableMode) {
             Sponge.getServer().getOnlinePlayers().stream().map(Player::getScoreboard)
-                    .forEach(scoreboard -> scoreboard.getObjectives().forEach(scoreboard::removeObjective));
+                    .forEach(scoreboard -> scoreboard.getObjective(ScoreBoardConfig.NAME)
+                            .ifPresent(scoreboard::removeObjective));
         }
     }
 
@@ -112,7 +114,7 @@ public class YysScoreBoard {
         PluginConfig.reload();
         ScoreBoardConfig.reload();
         Sponge.getServer().getOnlinePlayers().forEach(ScoreBoardConfig::setPlayerScoreBoard);
-        if(updateTask != null) {
+        if (updateTask != null) {
             updateTask.cancel();
         }
         updateTaskSubmit();
@@ -123,7 +125,7 @@ public class YysScoreBoard {
         if (PluginConfig.asyncUpdate) {
             builder.async();
         }
-        if(PluginConfig.updateTick > 0) {
+        if (PluginConfig.updateTick > 0) {
             builder.intervalTicks(PluginConfig.updateTick);
         }
         updateTask = builder.name("YYSScoreboard - update score board").execute(() -> Sponge.getServer().getOnlinePlayers()

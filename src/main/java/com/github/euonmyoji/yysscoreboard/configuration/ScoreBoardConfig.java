@@ -29,7 +29,7 @@ import static com.github.euonmyoji.yysscoreboard.configuration.PluginConfig.*;
  * @author yinyangshi
  */
 public final class ScoreBoardConfig {
-    private static final String NAME = "yyssbObjective";
+    public static final String NAME = "yyssbObjective";
     private static CommentedConfigurationNode cfg;
     private static ConfigurationLoader<CommentedConfigurationNode> loader;
     private static Scoreboard staticScoreBoard;
