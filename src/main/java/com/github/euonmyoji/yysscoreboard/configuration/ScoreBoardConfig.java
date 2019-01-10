@@ -78,18 +78,20 @@ public final class ScoreBoardConfig {
     }
 
     public static void setPlayerScoreBoard(Player p) {
-        Scoreboard sb = isStableMode ? p.getScoreboard() : isStaticMode ?
-                getStaticScoreBoard() : getPlayerOnlyScoreboard(p.getUniqueId());
-        if (sb == null) {
-            YysScoreBoard.logger.info("the player {} scoreboard is null, try to solve it now", p.getName());
-            if (isStaticMode) {
-                sb = getStaticScoreBoard();
-            } else {
-                sb = Scoreboard.builder().build();
+        if (PlayerConfig.list.contains(p.getUniqueId())) {
+            Scoreboard sb = isStableMode ? p.getScoreboard() : isStaticMode ?
+                    getStaticScoreBoard() : getPlayerOnlyScoreboard(p.getUniqueId());
+            if (sb == null) {
+                YysScoreBoard.logger.info("the player {} scoreboard is null, try to solve it now", p.getName());
+                if (isStaticMode) {
+                    sb = getStaticScoreBoard();
+                } else {
+                    sb = Scoreboard.builder().build();
+                }
             }
+            setScoreBoard(sb, p);
+            p.setScoreboard(sb);
         }
-        setScoreBoard(sb, p);
-        p.setScoreboard(sb);
     }
 
     private static void setScoreBoard(Scoreboard sb, Player p) {
