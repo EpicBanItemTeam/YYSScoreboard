@@ -1,6 +1,7 @@
 package com.github.euonmyoji.yysscoreboard;
 
 import com.github.euonmyoji.yysscoreboard.command.YysScoreBoardCommand;
+import com.github.euonmyoji.yysscoreboard.configuration.PlayerConfig;
 import com.github.euonmyoji.yysscoreboard.configuration.PluginConfig;
 import com.github.euonmyoji.yysscoreboard.configuration.ScoreBoardConfig;
 import com.github.euonmyoji.yysscoreboard.manager.PlaceHolderManager;
@@ -60,6 +61,7 @@ public class YysScoreBoard {
         try {
             Files.createDirectories(cfgDir);
             PluginConfig.init();
+            PlayerConfig.init();
         } catch (IOException e) {
             logger.warn("init plugin IOE!", e);
         }
@@ -113,6 +115,7 @@ public class YysScoreBoard {
     public void reload() {
         PluginConfig.reload();
         ScoreBoardConfig.reload();
+        PlayerConfig.reload();
         Sponge.getServer().getOnlinePlayers().forEach(ScoreBoardConfig::setPlayerScoreBoard);
         if (updateTask != null) {
             updateTask.cancel();
