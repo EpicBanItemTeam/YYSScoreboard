@@ -128,6 +128,7 @@ public final class ScoreBoardConfig {
         }
         for (ScoreboardRawData data : lines) {
             Text text = textManager.toText(data.text, p);
+
             if (hasSameScore) {
                 Score score = objective.getOrCreateScore(text);
                 score.setScore(data.score);
