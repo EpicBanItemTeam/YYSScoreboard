@@ -19,6 +19,7 @@ import java.util.UUID;
  */
 public class YysScoreBoardCommand {
     private static final CommandSpec OFF = CommandSpec.builder()
+            .permission("yysscoreboard.command.off")
             .executor((src, args) -> {
                 if (src instanceof Player) {
                     Runnable r = () -> {
@@ -40,7 +41,6 @@ public class YysScoreBoardCommand {
                             }
                         }
                     };
-                    Task.builder().async().execute(r).submit(YysScoreBoard.plugin);
                     if (PluginConfig.asyncUpdate) {
                         Task.builder().async().execute(r).submit(YysScoreBoard.plugin);
                     } else {
@@ -50,10 +50,10 @@ public class YysScoreBoardCommand {
                 }
                 return CommandResult.empty();
             })
-            .permission("yysscoreboard.command.off")
             .build();
 
     private static final CommandSpec ON = CommandSpec.builder()
+            .permission("yysscoreboard.command.on")
             .executor((src, args) -> {
                 if (src instanceof Player) {
                     Runnable r = () -> {
@@ -81,7 +81,6 @@ public class YysScoreBoardCommand {
                 }
                 return CommandResult.empty();
             })
-            .permission("yysscoreboard.command.on")
             .build();
 
     private static final CommandSpec RELOAD = CommandSpec.builder()
