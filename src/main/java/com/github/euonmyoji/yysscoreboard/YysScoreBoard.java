@@ -37,18 +37,18 @@ import java.nio.file.Path;
         authors = "yinyangshi", description = "Scoreboard for special require",
         dependencies = {@Dependency(id = YysScoreBoard.PAPI_ID, optional = true)})
 public class YysScoreBoard {
+    public static final String VERSION = "@spongeVersion@";
     static final String PAPI_ID = "placeholderapi";
     public static TextManager textManager;
     public static Logger logger;
     public static YysScoreBoard plugin;
-    public static final String VERSION = "@spongeVersion@";
     @Inject
     @ConfigDir(sharedRoot = false)
     public Path cfgDir;
     private boolean enabledPlaceHolderAPI = false;
     @Inject
     private Metrics2 metrics;
-
+    private Task updateTask;
 
     @Inject
     public void setLogger(Logger l) {
@@ -72,11 +72,9 @@ public class YysScoreBoard {
         ScoreBoardConfig.init();
     }
 
-    private Task updateTask;
-
     @Listener
     public void onStarted(GameStartedServerEvent event) {
-        Sponge.getCommandManager().register(this, YysScoreBoardCommand.YYSSB, "yyssb", "yysscoreboard");
+        Sponge.getCommandManager().register(this, YysScoreBoardCommand.YYSSB, "yyssb", "yysscoreboard", "sbyys");
         updateTaskSubmit();
         hook();
         try {
