@@ -36,7 +36,7 @@ public final class ScoreBoardConfig {
     private static List<ScoreboardRawData> lines;
     private static String title;
     private static Set<UUID> noClear = new HashSet<>();
-
+    private static WeakHashMap<UUID, Scoreboard> cache = new WeakHashMap<>();
 
     private ScoreBoardConfig() {
         throw new UnsupportedOperationException();
@@ -107,10 +107,10 @@ public final class ScoreBoardConfig {
         objective = setObjective(objective, p);
         if (shouldAdd) {
             sb.addObjective(objective);
-            sb.updateDisplaySlot(objective, DisplaySlots.SIDEBAR);
         }
-    }
+        sb.updateDisplaySlot(objective, DisplaySlots.SIDEBAR);
 
+    }
 
     private static Objective setObjective(@Nullable Objective objective, Player p) {
         if (objective == null) {
@@ -184,8 +184,6 @@ public final class ScoreBoardConfig {
         }
         return staticScoreBoard;
     }
-
-    private static WeakHashMap<UUID, Scoreboard> cache = new WeakHashMap<>();
 
     private static Scoreboard getPlayerOnlyScoreboard(UUID uuid) {
         Scoreboard sb = cache.get(uuid);
