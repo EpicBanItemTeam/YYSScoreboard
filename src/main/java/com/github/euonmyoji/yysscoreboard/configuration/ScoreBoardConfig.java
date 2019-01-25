@@ -94,7 +94,9 @@ public final class ScoreBoardConfig {
                 }
             }
             setScoreBoard(sb, p);
-            p.setScoreboard(sb);
+            if (sb != p.getScoreboard()) {
+                p.setScoreboard(sb);
+            }
         }
     }
 
@@ -186,12 +188,16 @@ public final class ScoreBoardConfig {
     }
 
     private static Scoreboard getPlayerOnlyScoreboard(UUID uuid) {
-        Scoreboard sb = cache.get(uuid);
-        if (sb == null) {
-            sb = Scoreboard.builder().build();
-            cache.put(uuid, sb);
+        if (cacheScoreboard) {
+            Scoreboard sb = cache.get(uuid);
+            if (sb == null) {
+                sb = Scoreboard.builder().build();
+                cache.put(uuid, sb);
+            }
+            return sb;
+        } else {
+            return Scoreboard.builder().build();
         }
-        return sb;
     }
 
     private static class ScoreboardRawData {

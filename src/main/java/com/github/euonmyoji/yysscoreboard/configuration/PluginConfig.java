@@ -19,12 +19,14 @@ public final class PluginConfig {
     private static final String STATIC_MODE = "static";
     private static final String SAME_SCORE_MODE = "same-score";
     private static final String UPDATE_TICK = "update-interval-tick";
+    private static final String CACHE_SCOREBOARD = "cache-scoreboard";
 
     public static boolean isStableMode = true;
     public static boolean isStaticMode = false;
     public static boolean asyncUpdate = false;
-    static boolean hasSameScore = false;
+    public static boolean cacheScoreboard = true;
     public static int updateTick = 20;
+    static boolean hasSameScore = false;
     private static CommentedConfigurationNode cfg;
     private static CommentedConfigurationNode generalNode;
     private static ConfigurationLoader<CommentedConfigurationNode> loader;
@@ -53,6 +55,7 @@ public final class PluginConfig {
         isStableMode = modes.getNode(STABLE_MODE).getBoolean(true);
         isStaticMode = modes.getNode(STATIC_MODE).getBoolean(false);
         hasSameScore = modes.getNode(SAME_SCORE_MODE).getBoolean(false);
+        cacheScoreboard = modes.getNode(CACHE_SCOREBOARD).getBoolean(true);
         asyncUpdate = modes.getNode("async-update").getBoolean(false);
         updateTick = generalNode.getNode(UPDATE_TICK).getInt(20);
     }
@@ -78,11 +81,11 @@ public final class PluginConfig {
         generalNode.getNode(UPDATE_TICK).setComment(generalNode.getNode(UPDATE_TICK).getComment()
                 .orElse("记分板刷新时间 默认为20tick"));
 
-        generalNode.getNode("scoreboard-mode").setComment(generalNode.getNode("scoreboard-mode").getComment()
-                .orElse("计分板模式选项(更好的配置" +
-                        "\n·async-update: 是否异步刷新计分板" +
-                        "\n·same-score: 是否允许计分板中文本有相同数字(如果不允许 那么闪烁可能轻微一点)" +
-                        "\n·stable: 兼容模式(兼容newhonor) 可能会遇到神奇的bug(例如玩家变量错乱了)  #具体代码实现为 所有sb为玩家目前身上的sb" +
-                        "\n·static: 计分板是否为静态(即全服统一sb 不分玩家) 如果为静态模式 请不要使用有关玩家的变量！！"));
+        generalNode.getNode("scoreboard-mode").setComment("计分板模式选项(更好的配置" +
+                "\n·async-update: 是否异步刷新计分板" +
+                "\n·cache-scoreboard: 如果是插件自行创建计分板 是否会缓存在内存中" +
+                "\n·same-score: 是否允许计分板中文本有相同数字(如果不允许 那么闪烁可能轻微一点)" +
+                "\n·stable: 兼容模式(兼容newhonor) 可能会遇到神奇的bug(例如玩家变量错乱了)  #具体代码实现为 所有sb为玩家目前身上的sb" +
+                "\n·static: 计分板是否为静态(即全服统一sb 不分玩家) 如果为静态模式 请不要使用有关玩家的变量！！");
     }
 }
