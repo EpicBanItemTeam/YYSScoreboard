@@ -65,7 +65,7 @@ public final class ScoreBoardConfig {
                     String[] args = s.split(";;", 2);
                     String text = args[0];
                     int slot = args.length > 1 ? Integer.parseInt(args[1], 10) : this.slot;
-                    if (slot < this.slot) {
+                    if (slot <= this.slot) {
                         this.slot = slot - 1;
                     }
                     return new ScoreboardRawData(text, slot);
