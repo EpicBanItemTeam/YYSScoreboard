@@ -122,7 +122,11 @@ public final class ScoreBoardConfig {
                     .criterion(Criteria.DUMMY)
                     .build();
         }
-        objective.setDisplayName(textManager.toText(title, p));
+        try {
+            objective.setDisplayName(textManager.toText(title, p));
+        } catch (NullPointerException e) {
+            YysScoreBoard.logger.warn("I don't know why NPE, title:" + title + ", player:" + p);
+        }
         Map<Text, Score> map = objective.getScores();
         if (!noClear.contains(p.getUniqueId())) {
             map.values().forEach(objective::removeScore);
