@@ -51,6 +51,7 @@ public final class ScoreBoardConfig {
 
     public static void reload() {
         noClear.clear();
+        cache.clear();
         loadNode();
         try {
             List<String> list = cfg.getNode("scoreboard", "lines").getList(TypeTokens.STRING_TOKEN, new ArrayList<String>() {{
