@@ -5,6 +5,7 @@ import com.github.euonmyoji.yysscoreboard.configuration.PlayerConfig;
 import com.github.euonmyoji.yysscoreboard.configuration.PluginConfig;
 import com.github.euonmyoji.yysscoreboard.configuration.ScoreBoardConfig;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
@@ -45,6 +46,20 @@ public class YysScoreBoardCommand {
                         Task.builder().async().execute(r).submit(YysScoreBoard.plugin);
                     } else {
                         r.run();
+                    }
+                    return CommandResult.success();
+                }
+                return CommandResult.empty();
+            })
+            .build();
+
+    private static final CommandSpec TOGGLE = CommandSpec.builder()
+            .executor((src, args) -> {
+                if (src instanceof Player) {
+                    if (PlayerConfig.list.contains(((Player) src).getUniqueId())) {
+                        Sponge.getCommandManager().process(src, "yyssb off");
+                    } else {
+                        Sponge.getCommandManager().process(src, "yyssb on");
                     }
                     return CommandResult.success();
                 }
@@ -104,5 +119,6 @@ public class YysScoreBoardCommand {
             .child(RELOAD, "reload")
             .child(ON, "on")
             .child(OFF, "off")
+            .child(TOGGLE, "toggle")
             .build();
 }
