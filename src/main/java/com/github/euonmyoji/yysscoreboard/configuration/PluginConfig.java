@@ -7,7 +7,10 @@ import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * @author yinyangshi
@@ -26,10 +29,13 @@ public final class PluginConfig {
     public static boolean asyncUpdate = false;
     static boolean cacheScoreboard = true;
     public static int updateTick = 20;
-    static boolean hasSameScore = false;
+    public static boolean hasSameScore = false;
     private static CommentedConfigurationNode cfg;
     private static CommentedConfigurationNode generalNode;
     private static ConfigurationLoader<CommentedConfigurationNode> loader;
+
+
+    public static Set<UUID> noClear = new HashSet<>();
 
     private PluginConfig() {
         throw new UnsupportedOperationException();

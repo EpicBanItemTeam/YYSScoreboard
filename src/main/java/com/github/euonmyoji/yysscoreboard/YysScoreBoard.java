@@ -99,12 +99,12 @@ public class YysScoreBoard {
     @Listener
     public void onStopping(GameStoppingServerEvent event) {
         if (PluginConfig.isStaticMode) {
-            ScoreBoardConfig.getStaticScoreBoard().getObjective(ScoreBoardConfig.NAME)
+            ScoreBoardConfig.getStaticScoreBoard().getObjective(ScoreBoardConfig.OBJECTIVE_NAME)
                     .ifPresent(objective -> ScoreBoardConfig.getStaticScoreBoard().removeObjective(objective));
         }
         if (!PluginConfig.isStableMode) {
             Sponge.getServer().getOnlinePlayers().stream().map(Player::getScoreboard)
-                    .forEach(scoreboard -> scoreboard.getObjective(ScoreBoardConfig.NAME)
+                    .forEach(scoreboard -> scoreboard.getObjective(ScoreBoardConfig.OBJECTIVE_NAME)
                             .ifPresent(scoreboard::removeObjective));
         }
     }
@@ -129,8 +129,9 @@ public class YysScoreBoard {
         if (PluginConfig.updateTick > 0) {
             builder.intervalTicks(PluginConfig.updateTick);
         }
-        updateTask = builder.name("YYSScoreboard - update score board").execute(() -> Sponge.getServer().getOnlinePlayers()
-                .forEach(ScoreBoardConfig::setPlayerScoreBoard)).async().submit(this);
+        updateTask = builder.name("YYSScoreboard - update score board")
+                .execute(() -> ScoreBoardConfig.setPlayerScoreBoard(Sponge.getServer().getOnlinePlayers()))
+                .async().submit(this);
     }
 
     private void hook() {

@@ -28,11 +28,11 @@ public class YysScoreBoardCommand {
                         if (PlayerConfig.list.contains(uuid)) {
                             src.sendMessage(Text.of("[YYSSB]你已经关闭scoreboard了"));
                             Scoreboard sb = ((Player) src).getScoreboard();
-                            sb.getObjective(ScoreBoardConfig.NAME).ifPresent(sb::removeObjective);
+                            sb.getObjective(ScoreBoardConfig.OBJECTIVE_NAME).ifPresent(sb::removeObjective);
                         } else {
                             PlayerConfig.list.add(uuid);
                             Scoreboard sb = ((Player) src).getScoreboard();
-                            sb.getObjective(ScoreBoardConfig.NAME).ifPresent(sb::removeObjective);
+                            sb.getObjective(ScoreBoardConfig.OBJECTIVE_NAME).ifPresent(sb::removeObjective);
                             try {
                                 PlayerConfig.saveList();
                                 src.sendMessage(Text.of("[YYSSB]关闭scoreboard成功"));
