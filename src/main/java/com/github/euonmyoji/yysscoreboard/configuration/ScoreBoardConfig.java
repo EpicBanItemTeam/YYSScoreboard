@@ -2,6 +2,9 @@ package com.github.euonmyoji.yysscoreboard.configuration;
 
 import com.github.euonmyoji.yysscoreboard.YysScoreBoard;
 import com.github.euonmyoji.yysscoreboard.data.ObjectiveData;
+import com.github.euonmyoji.yysscoreboard.data.TabData;
+import com.github.euonmyoji.yysscoreboard.task.DisplayScoreboard;
+import com.github.euonmyoji.yysscoreboard.task.DisplayTab;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
@@ -9,11 +12,12 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scoreboard.Scoreboard;
-import org.spongepowered.api.scoreboard.displayslot.DisplaySlots;
-import org.spongepowered.api.scoreboard.objective.Objective;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.WeakHashMap;
 
 import static com.github.euonmyoji.yysscoreboard.configuration.PluginConfig.*;
 
@@ -26,8 +30,6 @@ public final class ScoreBoardConfig {
     private static ConfigurationLoader<CommentedConfigurationNode> loader;
     private static Scoreboard staticScoreBoard;
     private static WeakHashMap<UUID, Scoreboard> cache = new WeakHashMap<>();
-
-    private static List<ObjectiveData> scoreBoardData = new ArrayList<>();
 
 
     private ScoreBoardConfig() {
@@ -44,65 +46,46 @@ public final class ScoreBoardConfig {
     public static void reload() {
         noClear.clear();
         cache.clear();
-        scoreBoardData.clear();
+        List<ObjectiveData> scoreBoardData = new ArrayList<>();
+        List<TabData> tabData = new ArrayList<>();
         loadNode();
         try {
-            scoreBoardData.add(new ObjectiveData(cfg.getNode("scoreboard")));
+            CommentedConfigurationNode oldSb = cfg.getNode("scoreboard");
+            if (!oldSb.isVirtual()) {
+                scoreBoardData.add(new ObjectiveData(oldSb, updateTick));
+
+            }
+            cfg.getNode("scoreboards").getChildrenMap().forEach((o, o2) -> {
+                try {
+                    scoreBoardData
+                            .add(new ObjectiveData(o2, updateTick));
+                } catch (ObjectMappingException e) {
+                    YysScoreBoard.logger.warn("scoreboard config error! where:", o.toString());
+                    YysScoreBoard.logger.warn("scoreboard config error!", e);
+                }
+            });
+
+            YysScoreBoard.plugin.setDisplayTask(new DisplayScoreboard(scoreBoardData));
         } catch (ObjectMappingException e) {
             YysScoreBoard.logger.warn("scoreboard config error!", e);
         }
+        cfg.getNode("tabs").getChildrenMap().forEach((o, o2) -> tabData.add(new TabData(o2, updateTick)));
+
+        YysScoreBoard.plugin.setDisplayTab(new DisplayTab(tabData));
     }
 
-    public static void setPlayerScoreBoard(Player p) {
+    public static void setPlayerScoreboard(Player p) {
         Scoreboard sb;
         if (PlayerConfig.list.contains(p.getUniqueId())) {
             sb = p.getScoreboard();
             sb.getObjective(OBJECTIVE_NAME).ifPresent(sb::removeObjective);
         } else {
             sb = getPlayerScoreboard(p);
-            setScoreBoard(sb, p);
+
             if (sb != p.getScoreboard()) {
                 p.setScoreboard(sb);
             }
         }
-    }
-
-    public static void setPlayerScoreBoard(Collection<Player> players) {
-        boolean setStatic = false;
-        Scoreboard sb;
-
-        for (Player p : players) {
-            if (PlayerConfig.list.contains(p.getUniqueId())) {
-                sb = p.getScoreboard();
-                sb.getObjective(OBJECTIVE_NAME).ifPresent(sb::removeObjective);
-            } else {
-                sb = getPlayerScoreboard(p);
-                if (sb == getStaticScoreBoard()) {
-                    if (!setStatic) {
-                        setStatic = true;
-                        setScoreBoard(sb, p);
-                    }
-                } else {
-                    setScoreBoard(sb, p);
-                }
-                if (sb != p.getScoreboard()) {
-                    p.setScoreboard(sb);
-                }
-            }
-        }
-    }
-
-    private static void setScoreBoard(Scoreboard sb, Player p) {
-        Objective objective = sb.getObjective(OBJECTIVE_NAME).orElse(null);
-        boolean shouldAdd = false;
-        if (objective == null) {
-            shouldAdd = true;
-        }
-        objective = scoreBoardData.get(0).setObjective(objective, p);
-        if (shouldAdd) {
-            sb.addObjective(objective);
-        }
-        sb.updateDisplaySlot(objective, DisplaySlots.SIDEBAR);
 
     }
 
@@ -134,7 +117,7 @@ public final class ScoreBoardConfig {
         return staticScoreBoard;
     }
 
-    private static Scoreboard getPlayerScoreboard(Player p) {
+    public static Scoreboard getPlayerScoreboard(Player p) {
         Scoreboard sb = isStableMode ? p.getScoreboard() : isStaticMode ?
                 getStaticScoreBoard() : getPlayerOnlyScoreboard(p.getUniqueId());
         if (sb == null) {

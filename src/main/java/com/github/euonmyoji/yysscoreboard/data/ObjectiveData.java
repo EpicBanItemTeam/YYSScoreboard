@@ -27,8 +27,9 @@ import static com.github.euonmyoji.yysscoreboard.configuration.ScoreBoardConfig.
 public class ObjectiveData {
     private final List<ScoreRawData> lines;
     private final String title;
+    public final int delay;
 
-    public ObjectiveData(CommentedConfigurationNode node) throws ObjectMappingException {
+    public ObjectiveData(CommentedConfigurationNode node, int delay) throws ObjectMappingException {
         List<String> list = node.getNode("lines").getList(TypeTokens.STRING_TOKEN);
         lines = node.getNode("lines").getList(TypeTokens.STRING_TOKEN, Collections.emptyList())
                 .stream().map(new Function<String, ScoreRawData>() {
@@ -46,6 +47,7 @@ public class ObjectiveData {
                     }
                 }).collect(Collectors.toList());
         title = node.getNode("title").getString("YYS Scoreboard");
+        this.delay = node.getNode("delay").getInt(delay);
     }
 
     public Objective setObjective(@Nullable Objective objective, Player p) {

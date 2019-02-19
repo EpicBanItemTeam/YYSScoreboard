@@ -7,6 +7,8 @@ import com.github.euonmyoji.yysscoreboard.configuration.ScoreBoardConfig;
 import com.github.euonmyoji.yysscoreboard.manager.PlaceHolderManager;
 import com.github.euonmyoji.yysscoreboard.manager.TextManager;
 import com.github.euonmyoji.yysscoreboard.manager.TextManagerImpl;
+import com.github.euonmyoji.yysscoreboard.task.DisplayScoreboard;
+import com.github.euonmyoji.yysscoreboard.task.DisplayTab;
 import com.google.inject.Inject;
 import org.bstats.sponge.Metrics2;
 import org.slf4j.Logger;
@@ -48,7 +50,8 @@ public class YysScoreBoard {
     private boolean enabledPlaceHolderAPI = false;
     @Inject
     private Metrics2 metrics;
-    private Task updateTask;
+    private DisplayScoreboard displayTask;
+    private DisplayTab displayTab;
 
     @Inject
     public void setLogger(Logger l) {
@@ -75,7 +78,6 @@ public class YysScoreBoard {
     @Listener
     public void onStarted(GameStartedServerEvent event) {
         Sponge.getCommandManager().register(this, YysScoreBoardCommand.YYSSB, "yyssb", "yysscoreboard", "sbyys");
-        updateTaskSubmit();
         hook();
         try {
             if (!Sponge.getMetricsConfigManager().areMetricsEnabled(this)) {
@@ -93,7 +95,9 @@ public class YysScoreBoard {
     @Listener(order = Order.LATE)
     public void onClientConnectionJoin(ClientConnectionEvent.Join event) {
         Player p = event.getTargetEntity();
-        ScoreBoardConfig.setPlayerScoreBoard(p);
+        ScoreBoardConfig.setPlayerScoreboard(p);
+        displayTask.setScoreBoard(p.getScoreboard(), p);
+        displayTab.setPlayer(p);
     }
 
     @Listener
@@ -111,27 +115,32 @@ public class YysScoreBoard {
 
 
     public void reload() {
+        if (displayTask != null) {
+            displayTask.cancel();
+        }
+        if (displayTab != null) {
+            displayTab.cancel();
+        }
         PluginConfig.reload();
         ScoreBoardConfig.reload();
         PlayerConfig.reload();
-        Sponge.getServer().getOnlinePlayers().forEach(ScoreBoardConfig::setPlayerScoreBoard);
-        if (updateTask != null) {
-            updateTask.cancel();
-        }
-        updateTaskSubmit();
+        Sponge.getServer().getOnlinePlayers().forEach(ScoreBoardConfig::setPlayerScoreboard);
     }
 
-    private void updateTaskSubmit() {
-        Task.Builder builder = Task.builder();
-        if (PluginConfig.asyncUpdate) {
-            builder.async();
+    public void setDisplayTask(DisplayScoreboard displayTask) {
+        if (this.displayTask != null) {
+            this.displayTask.cancel();
         }
-        if (PluginConfig.updateTick > 0) {
-            builder.intervalTicks(PluginConfig.updateTick);
+        this.displayTask = displayTask;
+        displayTask.run();
+    }
+
+    public void setDisplayTab(DisplayTab displayTab) {
+        if (this.displayTab != null) {
+            this.displayTab.cancel();
         }
-        updateTask = builder.name("YYSScoreboard - update score board")
-                .execute(() -> ScoreBoardConfig.setPlayerScoreBoard(Sponge.getServer().getOnlinePlayers()))
-                .async().submit(this);
+        this.displayTab = displayTab;
+        displayTab.run();
     }
 
     private void hook() {

@@ -75,7 +75,7 @@ public class YysScoreBoardCommand {
                         UUID uuid = ((Player) src).getUniqueId();
                         if (PlayerConfig.list.contains(uuid)) {
                             PlayerConfig.list.remove(uuid);
-                            ScoreBoardConfig.setPlayerScoreBoard(((Player) src));
+                            ScoreBoardConfig.setPlayerScoreboard(((Player) src));
                             try {
                                 PlayerConfig.saveList();
                                 src.sendMessage(Text.of("[YYSSB]开启scoreboard成功"));
