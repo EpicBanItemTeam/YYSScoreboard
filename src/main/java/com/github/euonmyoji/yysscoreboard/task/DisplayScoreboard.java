@@ -69,7 +69,7 @@ public class DisplayScoreboard implements Runnable {
         }
     }
 
-    public void setScoreBoard(Scoreboard sb, Player p) {
+    public synchronized void setScoreBoard(Scoreboard sb, Player p) {
         Objective objective = sb.getObjective(OBJECTIVE_NAME).orElse(null);
         boolean shouldAdd = false;
         if (objective == null) {
