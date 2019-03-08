@@ -15,36 +15,38 @@ import java.util.List;
 public class DisplayTab implements Runnable {
     private final List<TabData> data;
     private int index = 0;
-    private volatile boolean running = true;
+    private volatile boolean running;
 
     public DisplayTab(List<TabData> data) {
         this.data = data;
+        running = !data.isEmpty();
     }
 
     @Override
     public void run() {
         if (running) {
-            if (running) {
-                Task.Builder builder = Task.builder().execute(this);
-                builder.delayTicks(data.get(index).delay);
-                Sponge.getServer().getOnlinePlayers().forEach(data.get(index)::setTab);
-                if (++index >= data.size()) {
-                    index = 0;
-                }
-                if (PluginConfig.asyncUpdate) {
-                    builder.async();
-                }
-                builder.submit(YysScoreBoard.plugin);
+
+            Task.Builder builder = Task.builder().execute(this);
+            builder.delayTicks(data.get(index).delay);
+            Sponge.getServer().getOnlinePlayers().forEach(data.get(index)::setTab);
+            if (++index >= data.size()) {
+                index = 0;
             }
+            if (PluginConfig.asyncUpdate) {
+                builder.async();
+            }
+            builder.submit(YysScoreBoard.plugin);
         }
     }
 
     public void setPlayer(Player p) {
-        int i = index;
-        if (i >= data.size()) {
-            i = 0;
+        if (running) {
+            int i = index;
+            if (i >= data.size()) {
+                i = 0;
+            }
+            data.get(i).setTab(p);
         }
-        data.get(i).setTab(p);
     }
 
     public void cancel() {

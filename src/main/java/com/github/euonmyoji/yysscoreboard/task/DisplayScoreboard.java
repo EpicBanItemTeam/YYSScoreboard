@@ -22,10 +22,11 @@ import static com.github.euonmyoji.yysscoreboard.configuration.ScoreBoardConfig.
 public class DisplayScoreboard implements Runnable {
     private final List<ObjectiveData> data;
     private int index = 0;
-    private volatile boolean running = true;
+    private volatile boolean running;
 
     public DisplayScoreboard(List<ObjectiveData> data) {
         this.data = data;
+        running = !data.isEmpty();
     }
 
     @Override
@@ -47,7 +48,6 @@ public class DisplayScoreboard implements Runnable {
     private void setPlayerScoreBoard(Collection<Player> players) {
         boolean setStatic = false;
         Scoreboard sb;
-
         for (Player p : players) {
             if (PlayerConfig.list.contains(p.getUniqueId())) {
                 sb = p.getScoreboard();
@@ -69,17 +69,19 @@ public class DisplayScoreboard implements Runnable {
         }
     }
 
-    public synchronized void setScoreBoard(Scoreboard sb, Player p) {
-        Objective objective = sb.getObjective(OBJECTIVE_NAME).orElse(null);
-        boolean shouldAdd = false;
-        if (objective == null) {
-            shouldAdd = true;
+    public void setScoreBoard(Scoreboard sb, Player p) {
+        if (running) {
+            Objective objective = sb.getObjective(OBJECTIVE_NAME).orElse(null);
+            boolean shouldAdd = false;
+            if (objective == null) {
+                shouldAdd = true;
+            }
+            objective = data.get(index).setObjective(objective, p);
+            if (shouldAdd) {
+                sb.addObjective(objective);
+            }
+            sb.updateDisplaySlot(objective, DisplaySlots.SIDEBAR);
         }
-        objective = data.get(index).setObjective(objective, p);
-        if (shouldAdd) {
-            sb.addObjective(objective);
-        }
-        sb.updateDisplaySlot(objective, DisplaySlots.SIDEBAR);
 
     }
 

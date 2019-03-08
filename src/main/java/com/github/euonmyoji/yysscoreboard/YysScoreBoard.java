@@ -124,7 +124,11 @@ public class YysScoreBoard {
         PluginConfig.reload();
         ScoreBoardConfig.reload();
         PlayerConfig.reload();
-        Sponge.getServer().getOnlinePlayers().forEach(ScoreBoardConfig::setPlayerScoreboard);
+        Sponge.getServer().getOnlinePlayers().forEach(p -> {
+            ScoreBoardConfig.setPlayerScoreboard(p);
+            displayTask.setScoreBoard(p.getScoreboard(), p);
+            displayTab.setPlayer(p);
+        });
     }
 
     public void setDisplayTask(DisplayScoreboard displayTask) {
