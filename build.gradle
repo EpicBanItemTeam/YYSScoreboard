@@ -1,11 +1,20 @@
+import org.ajoberstar.grgit.Grgit
+
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.ajoberstar:grgit:1.7.0'
+    }
+}
+
 plugins {
     id 'ninja.miserable.blossom' version '1.0.1'
     id 'com.github.johnrengelman.shadow' version '2.0.4'
     id 'java'
 }
-
-group 'com.github.euonmyoji.yysscoreboard'
-version '0.1.0'
 
 
 defaultTasks 'clean', 'build'
@@ -19,6 +28,24 @@ configurations {
 blossom {
     replaceToken('@spongeVersion@', version)
 }
+
+def buildNumber = ""
+ext {
+    //代码来自插件ebi中的build.gradle → : https://github.com/euOnmyoji/EpicBanItem---Sponge
+    //noinspection GrDeprecatedAPIUsage  不会用新版
+    git = Grgit.open(file(".git"))
+    parents = git.head().parentIds
+    index = 0// Offset to match CI
+    while (parents != null && !parents.isEmpty()) {
+        parents = git.getResolve().toCommit(parents.get(0)).getParentIds()
+        index++
+    }
+    //noinspection GrReassignedInClosureLocalVar
+    buildNumber = "${index}"
+}
+
+version = "0.1.0-b{buildNumber}"
+group 'com.github.euonmyoji.yysscoreboard'
 
 repositories {
     mavenCentral()
