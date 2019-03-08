@@ -14,6 +14,8 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scoreboard.Scoreboard;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -37,9 +39,17 @@ public final class ScoreBoardConfig {
     }
 
     public static void init() {
+        Path path = YysScoreBoard.plugin.cfgDir.resolve("scoreboard.conf");
+        boolean virtual = Files.notExists(path);
         loader = HoconConfigurationLoader.builder()
-                .setPath(YysScoreBoard.plugin.cfgDir.resolve("scoreboard.conf")).build();
+                .setPath(path).build();
         reload();
+        if (virtual) {
+            CommentedConfigurationNode tabNode = cfg.getNode("tabs", "example");
+            tabNode.getNode("header").getString("Header~");
+            tabNode.getNode("footer").getString("Footer~");
+            tabNode.getNode("delay").getInt(500);
+        }
         save();
     }
 
