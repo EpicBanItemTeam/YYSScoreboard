@@ -24,7 +24,7 @@ configurations {
     shade
     compile.extendsFrom(shade)
 }
-
+version = "0.1.0"
 blossom {
     replaceToken('@spongeVersion@', version)
 }
@@ -44,7 +44,7 @@ ext {
     buildNumber = "${index}"
 }
 
-version = "0.1.0-b${buildNumber}"
+version = "${version}-b${buildNumber}"
 group 'com.github.euonmyoji.yysscoreboard'
 
 repositories {
