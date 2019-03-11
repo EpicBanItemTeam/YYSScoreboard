@@ -46,32 +46,36 @@ public final class ScoreBoardConfig {
                 .setPath(path).build();
         reload();
         if (virtual) {
-            //tab node//////////////////////////////////////////////
-            CommentedConfigurationNode node = cfg.getNode("tabs", "example");
-            node.getNode("header").getString("Header~");
-            node.getNode("footer").getString("Footer~");
-            node.getNode("delay").getInt(500);
-            //tab node2//////////////////////////////////////////////
+            try {
+                //tab node//////////////////////////////////////////////
+                CommentedConfigurationNode node = cfg.getNode("tabs", "example");
+                node.getNode("header").getString("Header~");
+                node.getNode("footer").getString("Footer~");
+                node.getNode("delay").getInt(500);
+                //tab node2//////////////////////////////////////////////
 
 
-            //sb node///////////////////////////////////////////////
-            node = cfg.getNode("scoreboards", "example");
-            node.getNode("delay").getInt(20);
-            node.getNode("lines").getList(TypeTokens.STRING_TOKEN, new ArrayList<String>(){{
-               add("&4少女祈祷中;;233");
-               add("&4Now Loading~;;16");
-               add("->thwiki.cc;;9");
-            }};
-            node.getNode("title").getString("Gensokyo Info(x)");
-            //sb node2///////////////////////////////////////////////
-            node = cfg.getNode("scoreboards", "example2");
-            node.getNode("delay").getInt(20);
-            node.getNode("lines").getList(TypeTokens.STRING_TOKEN, new ArrayList<String>(){{
-                add("&2少女祈祷中;;233");
-                add("&2Now Loading~;;16");
-                add("-->thwiki.cc;;9");
-            }};
-            node.getNode("title").getString("Gensokyo Info(x)");
+                //sb node///////////////////////////////////////////////
+                node = cfg.getNode("scoreboards", "example");
+                node.getNode("delay").getInt(20);
+                node.getNode("lines").getList(TypeTokens.STRING_TOKEN, new ArrayList<String>() {{
+                    add("&4少女祈祷中;;233");
+                    add("&4Now Loading~;;16");
+                    add("->thwiki.cc;;9");
+                }});
+                node.getNode("title").getString("Gensokyo Info(x)");
+                //sb node2///////////////////////////////////////////////
+                node = cfg.getNode("scoreboards", "example2");
+                node.getNode("delay").getInt(20);
+                node.getNode("lines").getList(TypeTokens.STRING_TOKEN, new ArrayList<String>() {{
+                    add("&2少女祈祷中;;233");
+                    add("&2Now Loading~;;16");
+                    add("-->thwiki.cc;;9");
+                }});
+                node.getNode("title").getString("Gensokyo Info(x)");
+            } catch (ObjectMappingException e) {
+                YysScoreBoard.logger.warn("wtf", e);
+            }
         }
         save();
     }
