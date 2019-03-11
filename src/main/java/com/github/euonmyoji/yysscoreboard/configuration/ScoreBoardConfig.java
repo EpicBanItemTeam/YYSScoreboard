@@ -41,11 +41,9 @@ public final class ScoreBoardConfig {
 
     public static void init() {
         Path path = YysScoreBoard.plugin.cfgDir.resolve("scoreboard.conf");
-        boolean virtual = Files.notExists(path);
         loader = HoconConfigurationLoader.builder()
                 .setPath(path).build();
-        reload();
-        if (virtual) {
+        if (Files.notExists(path)) {
             try {
                 //tab node//////////////////////////////////////////////
                 CommentedConfigurationNode node = cfg.getNode("tabs", "example");
@@ -77,6 +75,7 @@ public final class ScoreBoardConfig {
                 YysScoreBoard.logger.warn("wtf", e);
             }
         }
+        reload();
         save();
     }
 
