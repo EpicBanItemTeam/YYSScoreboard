@@ -12,6 +12,7 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scoreboard.Scoreboard;
+import org.spongepowered.api.util.TypeTokens;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -45,10 +46,32 @@ public final class ScoreBoardConfig {
                 .setPath(path).build();
         reload();
         if (virtual) {
-            CommentedConfigurationNode tabNode = cfg.getNode("tabs", "example");
-            tabNode.getNode("header").getString("Header~");
-            tabNode.getNode("footer").getString("Footer~");
-            tabNode.getNode("delay").getInt(500);
+            //tab node//////////////////////////////////////////////
+            CommentedConfigurationNode node = cfg.getNode("tabs", "example");
+            node.getNode("header").getString("Header~");
+            node.getNode("footer").getString("Footer~");
+            node.getNode("delay").getInt(500);
+            //tab node2//////////////////////////////////////////////
+
+
+            //sb node///////////////////////////////////////////////
+            node = cfg.getNode("scoreboards", "example");
+            node.getNode("delay").getInt(20);
+            node.getNode("lines").getList(TypeTokens.STRING_TOKEN, new ArrayList<String>(){{
+               add("&4少女祈祷中;;233");
+               add("&4Now Loading~;;16");
+               add("->thwiki.cc;;9");
+            }};
+            node.getNode("title").getString("Gensokyo Info(x)");
+            //sb node2///////////////////////////////////////////////
+            node = cfg.getNode("scoreboards", "example2");
+            node.getNode("delay").getInt(20);
+            node.getNode("lines").getList(TypeTokens.STRING_TOKEN, new ArrayList<String>(){{
+                add("&2少女祈祷中;;233");
+                add("&2Now Loading~;;16");
+                add("-->thwiki.cc;;9");
+            }};
+            node.getNode("title").getString("Gensokyo Info(x)");
         }
         save();
     }
@@ -63,12 +86,10 @@ public final class ScoreBoardConfig {
             CommentedConfigurationNode oldSb = cfg.getNode("scoreboard");
             if (!oldSb.isVirtual()) {
                 scoreBoardData.add(new ObjectiveData(oldSb, updateTick));
-
             }
             cfg.getNode("scoreboards").getChildrenMap().forEach((o, o2) -> {
                 try {
-                    scoreBoardData
-                            .add(new ObjectiveData(o2, updateTick));
+                    scoreBoardData.add(new ObjectiveData(o2, updateTick));
                 } catch (ObjectMappingException e) {
                     YysScoreBoard.logger.warn("scoreboard config error! where:", o.toString());
                     YysScoreBoard.logger.warn("scoreboard config error!", e);

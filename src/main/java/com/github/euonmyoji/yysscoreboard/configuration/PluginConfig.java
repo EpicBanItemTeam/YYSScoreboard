@@ -28,7 +28,7 @@ public final class PluginConfig {
     public static boolean isStaticMode = false;
     public static boolean asyncUpdate = false;
     static boolean cacheScoreboard = true;
-    public static int updateTick = 20;
+    static int updateTick = 20;
     public static boolean hasSameScore = false;
     private static CommentedConfigurationNode cfg;
     private static CommentedConfigurationNode generalNode;
