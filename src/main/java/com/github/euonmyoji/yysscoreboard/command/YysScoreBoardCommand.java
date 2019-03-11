@@ -57,9 +57,9 @@ public class YysScoreBoardCommand {
             .executor((src, args) -> {
                 if (src instanceof Player) {
                     if (PlayerConfig.list.contains(((Player) src).getUniqueId())) {
-                        Sponge.getCommandManager().process(src, "yyssb off");
-                    } else {
                         Sponge.getCommandManager().process(src, "yyssb on");
+                    } else {
+                        Sponge.getCommandManager().process(src, "yyssb off");
                     }
                     return CommandResult.success();
                 }
@@ -85,6 +85,7 @@ public class YysScoreBoardCommand {
                             }
                         } else {
                             src.sendMessage(Text.of("[YYSSB]你已经开启scoreboard了"));
+                            ScoreBoardConfig.setPlayerScoreboard(((Player) src));
                         }
                     };
                     if (PluginConfig.asyncUpdate) {
