@@ -43,6 +43,7 @@ public final class ScoreBoardConfig {
         Path path = YysScoreBoard.plugin.cfgDir.resolve("scoreboard.conf");
         loader = HoconConfigurationLoader.builder()
                 .setPath(path).build();
+        reload();
         if (Files.notExists(path)) {
             try {
                 //tab node//////////////////////////////////////////////
