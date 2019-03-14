@@ -27,6 +27,7 @@ public final class PluginConfig {
     public static boolean isStableMode = true;
     public static boolean isStaticMode = false;
     public static boolean asyncUpdate = false;
+    public static int goalCount = 9;
     static boolean cacheScoreboard = true;
     static int updateTick = 20;
     public static boolean hasSameScore = false;
@@ -64,6 +65,7 @@ public final class PluginConfig {
         cacheScoreboard = modes.getNode(CACHE_SCOREBOARD).getBoolean(true);
         asyncUpdate = modes.getNode("async-update").getBoolean(false);
         updateTick = generalNode.getNode(UPDATE_TICK).getInt(20);
+        goalCount = cfg.getNode("extra", "parallelGoal").getInt(9);
     }
 
     private static void save() {
@@ -93,5 +95,7 @@ public final class PluginConfig {
                 "\n·same-score: 是否允许计分板中文本有相同数字(如果不允许 那么闪烁可能轻微一点)" +
                 "\n·stable: 兼容模式(兼容newhonor) 可能会遇到神奇的bug(例如玩家变量错乱了)  #具体代码实现为 所有sb为玩家目前身上的sb" +
                 "\n·static: 计分板是否为静态(即全服统一sb 不分玩家) 如果为静态模式 请不要使用有关玩家的变量！！");
+
+        cfg.getNode("extra", "parallelGoal").setComment("玩家数量大于等于多少时，并行处理数据");
     }
 }

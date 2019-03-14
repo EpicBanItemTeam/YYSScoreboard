@@ -50,6 +50,8 @@ public final class ScoreBoardConfig {
                 CommentedConfigurationNode node = cfg.getNode("tabs", "example");
                 node.getNode("header").getString("Header~");
                 node.getNode("footer").getString("Footer~");
+                node.getNode("prefix").getString("[prefix]");
+                node.getNode("suffix").getString("[suffix]");
                 node.getNode("delay").getInt(500);
                 //tab node2//////////////////////////////////////////////
 

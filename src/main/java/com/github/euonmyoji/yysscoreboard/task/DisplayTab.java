@@ -3,6 +3,7 @@ package com.github.euonmyoji.yysscoreboard.task;
 import com.github.euonmyoji.yysscoreboard.YysScoreBoard;
 import com.github.euonmyoji.yysscoreboard.configuration.PluginConfig;
 import com.github.euonmyoji.yysscoreboard.data.TabData;
+import com.github.euonmyoji.yysscoreboard.util.Util;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
@@ -28,7 +29,7 @@ public class DisplayTab implements Runnable {
 
             Task.Builder builder = Task.builder().execute(this);
             builder.delayTicks(data.get(index).delay);
-            Sponge.getServer().getOnlinePlayers().forEach(data.get(index)::setTab);
+            Util.getStream(Sponge.getServer().getOnlinePlayers()).forEach(data.get(index)::setTab);
             if (++index >= data.size()) {
                 index = 0;
             }
