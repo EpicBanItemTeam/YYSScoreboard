@@ -51,7 +51,6 @@ public final class PluginConfig {
         save();
     }
 
-    @SuppressWarnings("unused")
     public static String getUsingLang() {
         return generalNode.getNode(LANGUAGE).getString(Locale.getDefault().toString());
     }

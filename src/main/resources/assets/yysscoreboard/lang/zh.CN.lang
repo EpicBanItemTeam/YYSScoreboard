@@ -1,0 +1,4 @@
+yysscoreboard.command.on.successful=[YYSSB]开启scoreboard成功
+yysscoreboard.command.on.already=[YYSSB]你已经开启scoreboard了
+yysscoreboard.command.off.successful=[YYSSB]关闭scoreboard成功
+yysscoreboard.command.off.already=[YYSSB]你已经关闭scoreboard了

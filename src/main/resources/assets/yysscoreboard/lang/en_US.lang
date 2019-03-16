@@ -1,0 +1,4 @@
+yysscoreboard.command.on.successful=[YYSSB]Enable scoreboard successful
+yysscoreboard.command.on.already=[YYSSB]You've enabled scoreboard already
+yysscoreboard.command.off.successful=[YYSSB]Disable scoreboard successful
+yysscoreboard.command.off.already=[YYSSB]You've disabled scoreboard already

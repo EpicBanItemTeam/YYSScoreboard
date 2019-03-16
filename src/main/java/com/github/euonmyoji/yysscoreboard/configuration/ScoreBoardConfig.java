@@ -3,6 +3,7 @@ package com.github.euonmyoji.yysscoreboard.configuration;
 import com.github.euonmyoji.yysscoreboard.YysScoreBoard;
 import com.github.euonmyoji.yysscoreboard.data.ObjectiveData;
 import com.github.euonmyoji.yysscoreboard.data.TabData;
+import com.github.euonmyoji.yysscoreboard.manager.LanguageManager;
 import com.github.euonmyoji.yysscoreboard.task.DisplayObjective;
 import com.github.euonmyoji.yysscoreboard.task.DisplayTab;
 import ninja.leaping.configurate.ConfigurationOptions;
@@ -80,6 +81,7 @@ public final class ScoreBoardConfig {
             save();
         }
         reload();
+        LanguageManager.init();
     }
 
     public static void reload() {
@@ -109,6 +111,7 @@ public final class ScoreBoardConfig {
         cfg.getNode("tabs").getChildrenMap().forEach((o, o2) -> tabData.add(new TabData(o2, updateTick)));
 
         YysScoreBoard.plugin.setDisplayTab(new DisplayTab(tabData));
+        LanguageManager.reload();
     }
 
     public static void setPlayerScoreboard(Player p) {

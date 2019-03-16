@@ -4,6 +4,8 @@ import com.github.euonmyoji.yysscoreboard.YysScoreBoard;
 import com.github.euonmyoji.yysscoreboard.configuration.PlayerConfig;
 import com.github.euonmyoji.yysscoreboard.configuration.PluginConfig;
 import com.github.euonmyoji.yysscoreboard.configuration.ScoreBoardConfig;
+import com.github.euonmyoji.yysscoreboard.manager.LanguageManager;
+import com.github.euonmyoji.yysscoreboard.util.Util;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -12,6 +14,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.scoreboard.Scoreboard;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.UUID;
 
@@ -26,7 +29,7 @@ public class YysScoreBoardCommand {
                     Runnable r = () -> {
                         UUID uuid = ((Player) src).getUniqueId();
                         if (PlayerConfig.list.contains(uuid)) {
-                            src.sendMessage(Text.of("[YYSSB]你已经关闭scoreboard了"));
+                            src.sendMessage(Text.of("yysscoreboard.command.off.already"));
                             Scoreboard sb = ((Player) src).getScoreboard();
                             sb.getObjective(ScoreBoardConfig.OBJECTIVE_NAME).ifPresent(sb::removeObjective);
                         } else {
@@ -35,10 +38,10 @@ public class YysScoreBoardCommand {
                             sb.getObjective(ScoreBoardConfig.OBJECTIVE_NAME).ifPresent(sb::removeObjective);
                             try {
                                 PlayerConfig.saveList();
-                                src.sendMessage(Text.of("[YYSSB]关闭scoreboard成功"));
+                                src.sendMessage(Text.of("yysscoreboard.command.off.successful"));
                             } catch (ObjectMappingException e) {
                                 YysScoreBoard.logger.warn("error while setting off", e);
-                                src.sendMessage(Text.of("[YYSSB]配置文件错误!"));
+                                src.sendMessage(Text.of("[YYSSB]ERROR:" + e.getMessage()));
                             }
                         }
                     };
@@ -78,13 +81,13 @@ public class YysScoreBoardCommand {
                             ScoreBoardConfig.setPlayerScoreboard(((Player) src));
                             try {
                                 PlayerConfig.saveList();
-                                src.sendMessage(Text.of("[YYSSB]开启scoreboard成功"));
+                                src.sendMessage(Text.of("yysscoreboard.command.on.successful"));
                             } catch (ObjectMappingException e) {
                                 YysScoreBoard.logger.warn("error while setting on", e);
-                                src.sendMessage(Text.of("[YYSSB]配置文件错误!"));
+                                src.sendMessage(Text.of("[YYSSB]ERROR:" + e.getMessage()));
                             }
                         } else {
-                            src.sendMessage(Text.of("[YYSSB]你已经开启scoreboard了"));
+                            src.sendMessage(Util.toText(LanguageManager.getString("yysscoreboard.command.on.already")));
                             ScoreBoardConfig.setPlayerScoreboard(((Player) src));
                         }
                     };
