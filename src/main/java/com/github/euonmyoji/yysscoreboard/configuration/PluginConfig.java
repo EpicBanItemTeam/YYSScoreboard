@@ -1,6 +1,7 @@
 package com.github.euonmyoji.yysscoreboard.configuration;
 
 import com.github.euonmyoji.yysscoreboard.YysScoreBoard;
+import com.github.euonmyoji.yysscoreboard.task.DisplayPing;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
@@ -31,9 +32,9 @@ public final class PluginConfig {
     public static boolean showPing = false;
     public static boolean hasSameScore = false;
     public static Set<UUID> noClear = new HashSet<>();
+    public static int updateTick = 20;
     static boolean isStableMode = true;
     static boolean cacheScoreboard = true;
-    public static int updateTick = 20;
     private static CommentedConfigurationNode cfg;
     private static CommentedConfigurationNode generalNode;
     private static ConfigurationLoader<CommentedConfigurationNode> loader;
@@ -71,6 +72,9 @@ public final class PluginConfig {
         ////////////extra///////////
         goalCount = cfg.getNode("extra", "parallelGoal").getInt(9);
         showPing = cfg.getNode("extra", "showPing").getBoolean(false);
+        if (showPing) {
+            YysScoreBoard.plugin.setDisplayPing(new DisplayPing());
+        }
     }
 
     private static void save() {

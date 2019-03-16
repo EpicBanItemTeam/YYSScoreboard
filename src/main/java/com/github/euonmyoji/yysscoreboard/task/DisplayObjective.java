@@ -32,14 +32,18 @@ public class DisplayObjective implements Runnable {
     @Override
     public void run() {
         if (running) {
-            setPlayerScoreBoard(Sponge.getServer().getOnlinePlayers());
             Task.Builder builder = Task.builder().execute(this);
-            if (PluginConfig.asyncSidebar) {
-                builder.async();
-            }
-            builder.delayTicks(data.get(index).delay);
-            if (++index >= data.size()) {
-                index = 0;
+            try {
+                setPlayerScoreBoard(Sponge.getServer().getOnlinePlayers());
+                if (PluginConfig.asyncSidebar) {
+                    builder.async();
+                }
+                builder.delayTicks(data.get(index).delay);
+                if (++index >= data.size()) {
+                    index = 0;
+                }
+            } catch (Throwable e) {
+                YysScoreBoard.logger.warn("something wrong", e);
             }
             builder.submit(YysScoreBoard.plugin);
         }

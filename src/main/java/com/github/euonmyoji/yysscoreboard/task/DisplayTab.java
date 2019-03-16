@@ -26,15 +26,18 @@ public class DisplayTab implements Runnable {
     @Override
     public void run() {
         if (running) {
-
             Task.Builder builder = Task.builder().execute(this);
-            builder.delayTicks(data.get(index).delay);
-            Util.getStream(Sponge.getServer().getOnlinePlayers()).forEach(data.get(index)::setTab);
-            if (++index >= data.size()) {
-                index = 0;
-            }
-            if (PluginConfig.asyncTab) {
-                builder.async();
+            try {
+                builder.delayTicks(data.get(index).delay);
+                Util.getStream(Sponge.getServer().getOnlinePlayers()).forEach(data.get(index)::setTab);
+                if (++index >= data.size()) {
+                    index = 0;
+                }
+                if (PluginConfig.asyncTab) {
+                    builder.async();
+                }
+            } catch (Throwable e) {
+                YysScoreBoard.logger.warn("something wrong", e);
             }
             builder.submit(YysScoreBoard.plugin);
         }

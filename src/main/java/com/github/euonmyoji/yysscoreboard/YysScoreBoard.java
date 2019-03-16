@@ -161,6 +161,13 @@ public class YysScoreBoard {
         displayTab.run();
     }
 
+    public void setDisplayPing(DisplayPing task) {
+        if (this.displayPing != null) {
+            this.displayPing.cancel();
+        }
+        this.displayPing = task;
+    }
+
     private void hook() {
 
         //hook PAPI

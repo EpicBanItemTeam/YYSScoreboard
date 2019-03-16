@@ -30,21 +30,25 @@ public class DisplayPing implements Runnable {
     @Override
     public void run() {
         if (running) {
-            for (Player p : Sponge.getServer().getOnlinePlayers()) {
-                Scoreboard sb = p.getScoreboard();
-                Objective objective = sb.getObjective(PING_OBJECTIVE_NAME).orElse(null);
-                if (objective == null) {
-                    objective = Objective.builder()
-                            .objectiveDisplayMode(ObjectiveDisplayModes.INTEGER)
-                            .name(PING_OBJECTIVE_NAME)
-                            .displayName(Text.of("ping"))
-                            .criterion(Criteria.DUMMY)
-                            .build();
+            try {
+                for (Player p : Sponge.getServer().getOnlinePlayers()) {
+                    Scoreboard sb = p.getScoreboard();
+                    Objective objective = sb.getObjective(PING_OBJECTIVE_NAME).orElse(null);
+                    if (objective == null) {
+                        objective = Objective.builder()
+                                .objectiveDisplayMode(ObjectiveDisplayModes.INTEGER)
+                                .name(PING_OBJECTIVE_NAME)
+                                .displayName(Text.of("ping"))
+                                .criterion(Criteria.DUMMY)
+                                .build();
 
-                    sb.addObjective(objective);
+                        sb.addObjective(objective);
+                    }
+                    sb.updateDisplaySlot(objective, DisplaySlots.LIST);
+                    objective.getOrCreateScore(Text.of(p.getName())).setScore(p.getConnection().getLatency());
                 }
-                sb.updateDisplaySlot(objective, DisplaySlots.LIST);
-                objective.getOrCreateScore(Text.of(p.getName())).setScore(p.getConnection().getLatency());
+            } catch (Throwable e) {
+                YysScoreBoard.logger.warn("something wrong", e);
             }
             Task.Builder builder = Task.builder().execute(this).delayTicks(PluginConfig.updateTick);
             if (PluginConfig.asyncTab) {
