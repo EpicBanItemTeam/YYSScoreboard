@@ -16,7 +16,7 @@ import org.spongepowered.api.text.Text;
  * @author yinyangshi
  */
 public class DisplayPing implements Runnable {
-    public static final String PING_OBJECTIVE_NAME = "yyssbPingObjective";
+    public static final String PING_OBJECTIVE_NAME = "yyssbPing";
     private volatile boolean running = true;
 
     public DisplayPing() {
