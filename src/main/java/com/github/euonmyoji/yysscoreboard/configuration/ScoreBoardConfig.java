@@ -3,7 +3,7 @@ package com.github.euonmyoji.yysscoreboard.configuration;
 import com.github.euonmyoji.yysscoreboard.YysScoreBoard;
 import com.github.euonmyoji.yysscoreboard.data.ObjectiveData;
 import com.github.euonmyoji.yysscoreboard.data.TabData;
-import com.github.euonmyoji.yysscoreboard.task.DisplayScoreboard;
+import com.github.euonmyoji.yysscoreboard.task.DisplayObjective;
 import com.github.euonmyoji.yysscoreboard.task.DisplayTab;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -102,7 +102,7 @@ public final class ScoreBoardConfig {
                 }
             });
 
-            YysScoreBoard.plugin.setDisplayTask(new DisplayScoreboard(scoreBoardData));
+            YysScoreBoard.plugin.setDisplayTask(new DisplayObjective(scoreBoardData));
         } catch (ObjectMappingException e) {
             YysScoreBoard.logger.warn("scoreboard config error!", e);
         }

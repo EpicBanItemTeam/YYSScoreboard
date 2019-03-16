@@ -42,7 +42,7 @@ public class YysScoreBoardCommand {
                             }
                         }
                     };
-                    if (PluginConfig.asyncUpdate) {
+                    if (PluginConfig.asyncDefault) {
                         Task.builder().async().execute(r).submit(YysScoreBoard.plugin);
                     } else {
                         r.run();
@@ -88,7 +88,7 @@ public class YysScoreBoardCommand {
                             ScoreBoardConfig.setPlayerScoreboard(((Player) src));
                         }
                     };
-                    if (PluginConfig.asyncUpdate) {
+                    if (PluginConfig.asyncDefault) {
                         Task.builder().async().execute(r).submit(YysScoreBoard.plugin);
                     } else {
                         r.run();

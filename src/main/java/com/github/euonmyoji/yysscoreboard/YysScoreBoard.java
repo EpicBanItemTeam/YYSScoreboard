@@ -7,7 +7,8 @@ import com.github.euonmyoji.yysscoreboard.configuration.ScoreBoardConfig;
 import com.github.euonmyoji.yysscoreboard.manager.PlaceHolderManager;
 import com.github.euonmyoji.yysscoreboard.manager.TextManager;
 import com.github.euonmyoji.yysscoreboard.manager.TextManagerImpl;
-import com.github.euonmyoji.yysscoreboard.task.DisplayScoreboard;
+import com.github.euonmyoji.yysscoreboard.task.DisplayObjective;
+import com.github.euonmyoji.yysscoreboard.task.DisplayPing;
 import com.github.euonmyoji.yysscoreboard.task.DisplayTab;
 import com.google.inject.Inject;
 import org.bstats.sponge.Metrics2;
@@ -25,6 +26,7 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.scoreboard.Scoreboard;
 import org.spongepowered.api.text.Text;
 
 import java.io.IOException;
@@ -50,8 +52,9 @@ public class YysScoreBoard {
     private boolean enabledPlaceHolderAPI = false;
     @Inject
     private Metrics2 metrics;
-    private DisplayScoreboard displayTask;
+    private DisplayObjective displayTask;
     private DisplayTab displayTab;
+    private DisplayPing displayPing;
 
     @Inject
     public void setLogger(Logger l) {
@@ -102,15 +105,20 @@ public class YysScoreBoard {
 
     @Listener
     public void onStopping(GameStoppingServerEvent event) {
-        if (PluginConfig.isStaticMode) {
-            ScoreBoardConfig.getStaticScoreBoard().getObjective(ScoreBoardConfig.OBJECTIVE_NAME)
-                    .ifPresent(objective -> ScoreBoardConfig.getStaticScoreBoard().removeObjective(objective));
-        }
-        if (!PluginConfig.isStableMode) {
-            Sponge.getServer().getOnlinePlayers().stream().map(Player::getScoreboard)
-                    .forEach(scoreboard -> scoreboard.getObjective(ScoreBoardConfig.OBJECTIVE_NAME)
-                            .ifPresent(scoreboard::removeObjective));
-        }
+        ScoreBoardConfig.getStaticScoreBoard().getObjective(ScoreBoardConfig.OBJECTIVE_NAME)
+                .ifPresent(objective -> {
+                    Scoreboard sb = ScoreBoardConfig.getStaticScoreBoard();
+                    sb.removeObjective(objective);
+                    sb.getObjective(DisplayPing.PING_OBJECTIVE_NAME).ifPresent(sb::removeObjective);
+
+                });
+
+        Sponge.getServer().getOnlinePlayers().stream().map(Player::getScoreboard)
+                .forEach(scoreboard -> {
+                    scoreboard.getObjective(ScoreBoardConfig.OBJECTIVE_NAME)
+                            .ifPresent(scoreboard::removeObjective);
+                    scoreboard.getObjective(DisplayPing.PING_OBJECTIVE_NAME).ifPresent(scoreboard::removeObjective);
+                });
     }
 
 
@@ -121,9 +129,15 @@ public class YysScoreBoard {
         if (displayTab != null) {
             displayTab.cancel();
         }
+        if (displayPing != null) {
+            displayPing.cancel();
+        }
         PluginConfig.reload();
         ScoreBoardConfig.reload();
         PlayerConfig.reload();
+        if (PluginConfig.showPing) {
+            displayPing = new DisplayPing();
+        }
         Sponge.getServer().getOnlinePlayers().forEach(p -> {
             ScoreBoardConfig.setPlayerScoreboard(p);
             displayTask.setScoreBoard(p.getScoreboard(), p);
@@ -131,7 +145,7 @@ public class YysScoreBoard {
         });
     }
 
-    public void setDisplayTask(DisplayScoreboard displayTask) {
+    public void setDisplayTask(DisplayObjective displayTask) {
         if (this.displayTask != null) {
             this.displayTask.cancel();
         }

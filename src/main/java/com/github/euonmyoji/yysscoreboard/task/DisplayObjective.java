@@ -19,12 +19,12 @@ import static com.github.euonmyoji.yysscoreboard.configuration.ScoreBoardConfig.
 /**
  * @author yinyangshi
  */
-public class DisplayScoreboard implements Runnable {
+public class DisplayObjective implements Runnable {
     private final List<ObjectiveData> data;
     private int index = 0;
     private volatile boolean running;
 
-    public DisplayScoreboard(List<ObjectiveData> data) {
+    public DisplayObjective(List<ObjectiveData> data) {
         this.data = data;
         running = !data.isEmpty();
     }
@@ -34,7 +34,7 @@ public class DisplayScoreboard implements Runnable {
         if (running) {
             setPlayerScoreBoard(Sponge.getServer().getOnlinePlayers());
             Task.Builder builder = Task.builder().execute(this);
-            if (PluginConfig.asyncUpdate) {
+            if (PluginConfig.asyncSidebar) {
                 builder.async();
             }
             builder.delayTicks(data.get(index).delay);

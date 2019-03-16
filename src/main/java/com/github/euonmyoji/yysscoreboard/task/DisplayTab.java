@@ -33,7 +33,7 @@ public class DisplayTab implements Runnable {
             if (++index >= data.size()) {
                 index = 0;
             }
-            if (PluginConfig.asyncUpdate) {
+            if (PluginConfig.asyncTab) {
                 builder.async();
             }
             builder.submit(YysScoreBoard.plugin);

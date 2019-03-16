@@ -23,20 +23,20 @@ public final class PluginConfig {
     private static final String SAME_SCORE_MODE = "same-score";
     private static final String UPDATE_TICK = "update-interval-tick";
     private static final String CACHE_SCOREBOARD = "cache-scoreboard";
-
-    public static boolean isStableMode = true;
     public static boolean isStaticMode = false;
-    public static boolean asyncUpdate = false;
+    public static boolean asyncSidebar = false;
+    public static boolean asyncDefault = false;
+    public static boolean asyncTab = false;
     public static int goalCount = 9;
-    static boolean cacheScoreboard = true;
-    static int updateTick = 20;
+    public static boolean showPing = false;
     public static boolean hasSameScore = false;
+    public static Set<UUID> noClear = new HashSet<>();
+    static boolean isStableMode = true;
+    static boolean cacheScoreboard = true;
+    public static int updateTick = 20;
     private static CommentedConfigurationNode cfg;
     private static CommentedConfigurationNode generalNode;
     private static ConfigurationLoader<CommentedConfigurationNode> loader;
-
-
-    public static Set<UUID> noClear = new HashSet<>();
 
     private PluginConfig() {
         throw new UnsupportedOperationException();
@@ -63,9 +63,14 @@ public final class PluginConfig {
         isStaticMode = modes.getNode(STATIC_MODE).getBoolean(false);
         hasSameScore = modes.getNode(SAME_SCORE_MODE).getBoolean(false);
         cacheScoreboard = modes.getNode(CACHE_SCOREBOARD).getBoolean(true);
-        asyncUpdate = modes.getNode("async-update").getBoolean(false);
+        asyncSidebar = modes.getNode("async-update", "sidebar").getBoolean(false);
+        asyncTab = modes.getNode("async-update", "tab").getBoolean(false);
+        asyncDefault = modes.getNode("async-update", "default").getBoolean(false);
         updateTick = generalNode.getNode(UPDATE_TICK).getInt(20);
+
+        ////////////extra///////////
         goalCount = cfg.getNode("extra", "parallelGoal").getInt(9);
+        showPing = cfg.getNode("extra", "showPing").getBoolean(false);
     }
 
     private static void save() {
