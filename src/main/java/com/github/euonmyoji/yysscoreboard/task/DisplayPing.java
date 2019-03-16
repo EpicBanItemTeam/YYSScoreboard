@@ -37,7 +37,9 @@ public class DisplayPing implements Runnable {
                     objective = Objective.builder()
                             .objectiveDisplayMode(ObjectiveDisplayModes.INTEGER)
                             .name(PING_OBJECTIVE_NAME)
-                            .criterion(Criteria.DUMMY).build();
+                            .displayName(Text.of("ping"))
+                            .criterion(Criteria.DUMMY)
+                            .build();
 
                     sb.addObjective(objective);
                 }
