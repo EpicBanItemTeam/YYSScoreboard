@@ -102,7 +102,7 @@ public class YysScoreBoardCommand {
             .build();
 
     private static final CommandSpec RELOAD = CommandSpec.builder()
-            .permission("yysscoreboard.command.admin.reload")
+            .permission("yysscoreboard.admin.command.reload")
             .executor((src, args) -> {
                 src.sendMessage(Text.of("[YYSSB]start reloading"));
                 long start = System.currentTimeMillis();
