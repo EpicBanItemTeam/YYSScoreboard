@@ -53,7 +53,7 @@ public final class ScoreBoardConfig {
                 node.getNode("footer").getString("Footer~");
                 node.getNode("prefix").getString("[prefix]");
                 node.getNode("suffix").getString("[suffix]");
-                node.getNode("delay").getInt(500);
+                node.getNode("delay").getInt(100);
                 //tab node2//////////////////////////////////////////////
 
 
@@ -150,7 +150,7 @@ public final class ScoreBoardConfig {
             synchronized (ScoreBoardConfig.class) {
                 if (staticScoreBoard == null) {
                     staticScoreBoard = Scoreboard.builder().build();
-                    YysScoreBoard.logger.info("static scoreboard is removed by unknown reason, rebuild new one");
+                    YysScoreBoard.logger.info("static scoreboard is null, rebuild new one");
                 }
             }
         }

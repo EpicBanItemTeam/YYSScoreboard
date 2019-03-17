@@ -1,4 +1,4 @@
-yysscoreboard.command.on.successful=[YYSSB]¿ªÆôscoreboard³É¹¦
-yysscoreboard.command.on.already=[YYSSB]ÄãÒÑ¾­¿ªÆôscoreboardÁË
-yysscoreboard.command.off.successful=[YYSSB]¹Ø±Õscoreboard³É¹¦
-yysscoreboard.command.off.already=[YYSSB]ÄãÒÑ¾­¹Ø±ÕscoreboardÁË
+yysscoreboard.command.on.successful=[YYSSB]å¼€å¯scoreboardæˆåŠŸ
+yysscoreboard.command.on.already=[YYSSB]ä½ å·²ç»å¼€å¯scoreboardäº†
+yysscoreboard.command.off.successful=[YYSSB]å…³é—­scoreboardæˆåŠŸ
+yysscoreboard.command.off.already=[YYSSB]ä½ å·²ç»å…³é—­scoreboardäº†
