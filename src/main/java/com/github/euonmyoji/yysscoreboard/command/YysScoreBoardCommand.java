@@ -28,7 +28,7 @@ public class YysScoreBoardCommand {
                     Runnable r = () -> {
                         UUID uuid = ((Player) src).getUniqueId();
                         if (PlayerConfig.list.contains(uuid)) {
-                            src.sendMessage(Text.of("yysscoreboard.command.off.already"));
+                            src.sendMessage(Util.toText(LanguageManager.getString("yysscoreboard.command.off.already")));
                             Scoreboard sb = ((Player) src).getScoreboard();
                             sb.getObjective(ScoreBoardConfig.OBJECTIVE_NAME).ifPresent(sb::removeObjective);
                         } else {
@@ -37,7 +37,7 @@ public class YysScoreBoardCommand {
                             sb.getObjective(ScoreBoardConfig.OBJECTIVE_NAME).ifPresent(sb::removeObjective);
                             try {
                                 PlayerConfig.saveList();
-                                src.sendMessage(Text.of("yysscoreboard.command.off.successful"));
+                                src.sendMessage(Util.toText(LanguageManager.getString("yysscoreboard.command.off.successful")));
                             } catch (ObjectMappingException e) {
                                 YysScoreBoard.logger.warn("error while setting off", e);
                                 src.sendMessage(Text.of("[YYSSB]ERROR:" + e.getMessage()));
@@ -80,7 +80,7 @@ public class YysScoreBoardCommand {
                             ScoreBoardConfig.setPlayerScoreboard(((Player) src));
                             try {
                                 PlayerConfig.saveList();
-                                src.sendMessage(Text.of("yysscoreboard.command.on.successful"));
+                                src.sendMessage(Util.toText(LanguageManager.getString("yysscoreboard.command.on.successful")));
                             } catch (ObjectMappingException e) {
                                 YysScoreBoard.logger.warn("error while setting on", e);
                                 src.sendMessage(Text.of("[YYSSB]ERROR:" + e.getMessage()));

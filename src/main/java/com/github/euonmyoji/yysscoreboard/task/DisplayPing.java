@@ -17,6 +17,7 @@ import org.spongepowered.api.text.Text;
  */
 public class DisplayPing implements Runnable {
     public static final String PING_OBJECTIVE_NAME = "yyssbPing";
+    private static Objective pingObjective;
     private volatile boolean running = true;
 
     public DisplayPing() {
@@ -27,6 +28,18 @@ public class DisplayPing implements Runnable {
         builder.submit(YysScoreBoard.plugin);
     }
 
+    private static Objective getPingObjective() {
+        if (pingObjective == null) {
+            pingObjective = Objective.builder()
+                    .objectiveDisplayMode(ObjectiveDisplayModes.INTEGER)
+                    .name(PING_OBJECTIVE_NAME)
+                    .displayName(Text.of("ping"))
+                    .criterion(Criteria.DUMMY)
+                    .build();
+        }
+        return pingObjective;
+    }
+
     @Override
     public void run() {
         if (running) {
@@ -34,14 +47,12 @@ public class DisplayPing implements Runnable {
                 for (Player p : Sponge.getServer().getOnlinePlayers()) {
                     Scoreboard sb = p.getScoreboard();
                     Objective objective = sb.getObjective(PING_OBJECTIVE_NAME).orElse(null);
+                    if (objective != null && objective != getPingObjective()) {
+                        sb.removeObjective(objective);
+                        objective = null;
+                    }
                     if (objective == null) {
-                        objective = Objective.builder()
-                                .objectiveDisplayMode(ObjectiveDisplayModes.INTEGER)
-                                .name(PING_OBJECTIVE_NAME)
-                                .displayName(Text.of("ping"))
-                                .criterion(Criteria.DUMMY)
-                                .build();
-
+                        objective = getPingObjective();
                         sb.addObjective(objective);
                     }
                     sb.updateDisplaySlot(objective, DisplaySlots.LIST);
