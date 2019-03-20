@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * @author yinyangshi
  */
-public class DisplayTab implements Runnable {
+public class DisplayTab implements IDisplayTask {
     private final List<TabData> data;
     private int index = 0;
     private volatile boolean running;
@@ -43,7 +43,8 @@ public class DisplayTab implements Runnable {
         }
     }
 
-    public void setPlayer(Player p) {
+    @Override
+    public void setupPlayer(Player p) {
         if (running) {
             int i = index;
             if (i >= data.size()) {
@@ -53,6 +54,7 @@ public class DisplayTab implements Runnable {
         }
     }
 
+    @Override
     public void cancel() {
         running = false;
     }

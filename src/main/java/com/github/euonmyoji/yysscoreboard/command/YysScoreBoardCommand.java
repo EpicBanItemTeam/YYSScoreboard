@@ -5,6 +5,7 @@ import com.github.euonmyoji.yysscoreboard.configuration.PlayerConfig;
 import com.github.euonmyoji.yysscoreboard.configuration.PluginConfig;
 import com.github.euonmyoji.yysscoreboard.configuration.ScoreBoardConfig;
 import com.github.euonmyoji.yysscoreboard.manager.LanguageManager;
+import com.github.euonmyoji.yysscoreboard.manager.TaskManager;
 import com.github.euonmyoji.yysscoreboard.util.Util;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
@@ -77,7 +78,7 @@ public class YysScoreBoardCommand {
                         UUID uuid = ((Player) src).getUniqueId();
                         if (PlayerConfig.list.contains(uuid)) {
                             PlayerConfig.list.remove(uuid);
-                            ScoreBoardConfig.setPlayerScoreboard(((Player) src));
+                            TaskManager.setupPlayer(((Player) src));
                             try {
                                 PlayerConfig.saveList();
                                 src.sendMessage(Util.toText(LanguageManager.getString("yysscoreboard.command.on.successful")));
@@ -87,7 +88,7 @@ public class YysScoreBoardCommand {
                             }
                         } else {
                             src.sendMessage(Util.toText(LanguageManager.getString("yysscoreboard.command.on.already")));
-                            ScoreBoardConfig.setPlayerScoreboard(((Player) src));
+                            TaskManager.setupPlayer(((Player) src));
                         }
                     };
                     if (PluginConfig.asyncDefault) {

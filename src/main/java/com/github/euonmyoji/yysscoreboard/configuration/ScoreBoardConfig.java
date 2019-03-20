@@ -6,6 +6,7 @@ import com.github.euonmyoji.yysscoreboard.data.TabData;
 import com.github.euonmyoji.yysscoreboard.manager.LanguageManager;
 import com.github.euonmyoji.yysscoreboard.task.DisplayObjective;
 import com.github.euonmyoji.yysscoreboard.task.DisplayTab;
+import com.github.euonmyoji.yysscoreboard.manager.TaskManager;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
@@ -18,6 +19,7 @@ import org.spongepowered.api.util.TypeTokens;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -30,78 +32,52 @@ import static com.github.euonmyoji.yysscoreboard.configuration.PluginConfig.*;
  */
 public final class ScoreBoardConfig {
     public static final String OBJECTIVE_NAME = "yyssbObjective";
+    private static final int CONFIG_VERSION = 1;
+    private static final String VERSION_KEY = "version";
+    private static Path cfgPath;
     private static CommentedConfigurationNode cfg;
     private static ConfigurationLoader<CommentedConfigurationNode> loader;
     private static Scoreboard staticScoreBoard;
     private static WeakHashMap<UUID, Scoreboard> cache = new WeakHashMap<>();
-
 
     private ScoreBoardConfig() {
         throw new UnsupportedOperationException();
     }
 
     public static void init() {
-        Path path = YysScoreBoard.plugin.cfgDir.resolve("scoreboard.conf");
+        cfgPath = YysScoreBoard.plugin.cfgDir.resolve("scoreboard.conf");
         loader = HoconConfigurationLoader.builder()
-                .setPath(path).build();
-        if (Files.notExists(path)) {
+                .setPath(cfgPath).build();
+        if (Files.notExists(cfgPath)) {
+            setExample();
+        } else {
             loadNode();
-            try {
-                //tab node//////////////////////////////////////////////
-                CommentedConfigurationNode node = cfg.getNode("tabs", "example");
-                node.getNode("header").getString("Header~");
-                node.getNode("footer").getString("Footer~");
-                node.getNode("prefix").getString("[prefix]");
-                node.getNode("suffix").getString("[suffix]");
-                node.getNode("delay").getInt(100);
-                //tab node2//////////////////////////////////////////////
-
-
-                //sb node///////////////////////////////////////////////
-                node = cfg.getNode("scoreboards", "example");
-                node.getNode("delay").getInt(20);
-                node.getNode("lines").getList(TypeTokens.STRING_TOKEN, new ArrayList<String>() {{
-                    add("&4少女祈祷中;;233");
-                    add("&4Now Loading~;;16");
-                    add("->thwiki.cc;;9");
-                }});
-                node.getNode("title").getString("Gensokyo Info(x)");
-                //sb node2///////////////////////////////////////////////
-                node = cfg.getNode("scoreboards", "example2");
-                node.getNode("delay").getInt(20);
-                node.getNode("lines").getList(TypeTokens.STRING_TOKEN, new ArrayList<String>() {{
-                    add("&2少女祈祷中;;233");
-                    add("&2Now Loading~;;16");
-                    add("-->thwiki.cc;;9");
-                }});
-                node.getNode("title").getString("Gensokyo Info(x)");
-            } catch (ObjectMappingException e) {
-                YysScoreBoard.logger.warn("wtf", e);
-            }
-            save();
+            checkUpdate();
         }
         reload();
         LanguageManager.init();
     }
 
     public static void reload() {
+        TaskManager.clear();
         noClear.clear();
         cache.clear();
-        List<ObjectiveData> scoreBoardData = new ArrayList<>();
         List<TabData> tabData = new ArrayList<>();
         loadNode();
         try {
-            CommentedConfigurationNode oldSb = cfg.getNode("scoreboard");
-            if (!oldSb.isVirtual()) {
-                scoreBoardData.add(new ObjectiveData(oldSb, updateTick));
-            }
-            cfg.getNode("scoreboards").getChildrenMap().forEach((o, o2) -> {
-                try {
-                    scoreBoardData.add(new ObjectiveData(o2, updateTick));
-                } catch (ObjectMappingException e) {
-                    YysScoreBoard.logger.warn("scoreboard config error! where:", o.toString());
-                    YysScoreBoard.logger.warn("scoreboard config error!", e);
-                }
+            cfg.getNode("scoreboards").getChildrenMap().forEach((o, task) -> {
+                String id = o.toString();
+                List<ObjectiveData> scoreBoardData = new ArrayList<>();
+
+                task.getChildrenMap().forEach((o1, o2) -> {
+                    try {
+                        scoreBoardData.add(new ObjectiveData(o2, updateTick));
+                    } catch (ObjectMappingException e) {
+                        YysScoreBoard.logger.warn("scoreboard config error! where:", o.toString());
+                        YysScoreBoard.logger.warn("scoreboard config error!", e);
+                    }
+                });
+                TaskManager.registerTask(id, new DisplayObjective(scoreBoardData));
             });
 
             YysScoreBoard.plugin.setDisplayTask(new DisplayObjective(scoreBoardData));
@@ -112,21 +88,6 @@ public final class ScoreBoardConfig {
 
         YysScoreBoard.plugin.setDisplayTab(new DisplayTab(tabData));
         LanguageManager.reload();
-    }
-
-    public static void setPlayerScoreboard(Player p) {
-        Scoreboard sb;
-        if (PlayerConfig.list.contains(p.getUniqueId())) {
-            sb = p.getScoreboard();
-            sb.getObjective(OBJECTIVE_NAME).ifPresent(sb::removeObjective);
-        } else {
-            sb = getPlayerScoreboard(p);
-
-            if (sb != p.getScoreboard()) {
-                p.setScoreboard(sb);
-            }
-        }
-
     }
 
     private static void save() {
@@ -142,6 +103,9 @@ public final class ScoreBoardConfig {
             cfg = loader.load(ConfigurationOptions.defaults().setShouldCopyDefaults(true));
         } catch (IOException e) {
             YysScoreBoard.logger.warn("load scoreboard config failed", e);
+            if (cfg == null) {
+                throw new RuntimeException("scoreboard config load failed (cfg is null)", e);
+            }
         }
     }
 
@@ -181,6 +145,65 @@ public final class ScoreBoardConfig {
             return sb;
         } else {
             return Scoreboard.builder().build();
+        }
+    }
+
+    private static void setExample() {
+        loadNode();
+        cfg.getNode(VERSION_KEY).setValue(CONFIG_VERSION);
+        try {
+            //tab node//////////////////////////////////////////////
+            CommentedConfigurationNode node = cfg.getNode("tabs", "example");
+            node.getNode("header").getString("Header~");
+            node.getNode("footer").getString("Footer~");
+            node.getNode("prefix").getString("[prefix]");
+            node.getNode("suffix").getString("[suffix]");
+            node.getNode("delay").getInt(100);
+            //tab node2//////////////////////////////////////////////
+
+
+            //sb node///////////////////////////////////////////////
+            node = cfg.getNode("scoreboards", "example");
+            node.getNode("delay").getInt(20);
+            node.getNode("lines").getList(TypeTokens.STRING_TOKEN, new ArrayList<String>() {{
+                add("&4少女祈祷中;;233");
+                add("&4Now Loading~;;16");
+                add("->thwiki.cc;;9");
+            }});
+            node.getNode("title").getString("Gensokyo Info(x)");
+            //sb node2///////////////////////////////////////////////
+            node = cfg.getNode("scoreboards", "example2");
+            node.getNode("delay").getInt(20);
+            node.getNode("lines").getList(TypeTokens.STRING_TOKEN, new ArrayList<String>() {{
+                add("&2少女祈祷中;;233");
+                add("&2Now Loading~;;16");
+                add("-->thwiki.cc;;9");
+            }});
+            node.getNode("title").getString("Gensokyo Info(x)");
+        } catch (ObjectMappingException e) {
+            YysScoreBoard.logger.warn("wtf", e);
+        }
+        save();
+    }
+
+    private static void checkUpdate() {
+        int version = cfg.getNode(VERSION_KEY).getInt(0);
+        if (version != CONFIG_VERSION) {
+            YysScoreBoard.logger.warn("The config is out-of-date (version :0) and latest version is ", CONFIG_VERSION);
+            YysScoreBoard.logger.warn("backup config now");
+
+            Path backupDir = YysScoreBoard.plugin.cfgDir.resolve("oldConfig");
+            try {
+                Files.createDirectories(backupDir);
+                Path backupCfgFile = backupDir.resolve("V" + version + "scoreboard.conf");
+                Files.copy(cfgPath, backupCfgFile, StandardCopyOption.COPY_ATTRIBUTES);
+            } catch (IOException e) {
+                YysScoreBoard.logger.error("backup config error and won't update config (may cause some bug)", e);
+                return;
+            }
+
+            cfg = loader.createEmptyNode();
+            setExample();
         }
     }
 }

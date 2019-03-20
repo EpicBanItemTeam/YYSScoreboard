@@ -5,11 +5,10 @@ import com.github.euonmyoji.yysscoreboard.configuration.PlayerConfig;
 import com.github.euonmyoji.yysscoreboard.configuration.PluginConfig;
 import com.github.euonmyoji.yysscoreboard.configuration.ScoreBoardConfig;
 import com.github.euonmyoji.yysscoreboard.manager.PlaceHolderManager;
+import com.github.euonmyoji.yysscoreboard.manager.TaskManager;
 import com.github.euonmyoji.yysscoreboard.manager.TextManager;
 import com.github.euonmyoji.yysscoreboard.manager.TextManagerImpl;
-import com.github.euonmyoji.yysscoreboard.task.DisplayObjective;
 import com.github.euonmyoji.yysscoreboard.task.DisplayPing;
-import com.github.euonmyoji.yysscoreboard.task.DisplayTab;
 import com.google.inject.Inject;
 import org.bstats.sponge.Metrics2;
 import org.slf4j.Logger;
@@ -52,8 +51,6 @@ public class YysScoreBoard {
     private boolean enabledPlaceHolderAPI = false;
     @Inject
     private Metrics2 metrics;
-    private DisplayObjective displayTask;
-    private DisplayTab displayTab;
     private DisplayPing displayPing;
 
     @Inject
@@ -100,7 +97,7 @@ public class YysScoreBoard {
         Player p = event.getTargetEntity();
         ScoreBoardConfig.setPlayerScoreboard(p);
         displayTask.setScoreBoard(p.getScoreboard(), p);
-        displayTab.setPlayer(p);
+        displayTab.setupPlayer(p);
     }
 
     @Listener
@@ -123,12 +120,7 @@ public class YysScoreBoard {
 
 
     public void reload() {
-        if (displayTask != null) {
-            displayTask.cancel();
-        }
-        if (displayTab != null) {
-            displayTab.cancel();
-        }
+        //todo: reload v0.2.0
         if (displayPing != null) {
             displayPing.cancel();
         }
@@ -138,27 +130,8 @@ public class YysScoreBoard {
         if (PluginConfig.showPing) {
             displayPing = new DisplayPing();
         }
-        Sponge.getServer().getOnlinePlayers().forEach(p -> {
-            ScoreBoardConfig.setPlayerScoreboard(p);
-            displayTask.setScoreBoard(p.getScoreboard(), p);
-            displayTab.setPlayer(p);
-        });
-    }
 
-    public void setDisplayTask(DisplayObjective displayTask) {
-        if (this.displayTask != null) {
-            this.displayTask.cancel();
-        }
-        this.displayTask = displayTask;
-        displayTask.run();
-    }
-
-    public void setDisplayTab(DisplayTab displayTab) {
-        if (this.displayTab != null) {
-            this.displayTab.cancel();
-        }
-        this.displayTab = displayTab;
-        displayTab.run();
+        TaskManager.update();
     }
 
     public void setDisplayPing(DisplayPing task) {
