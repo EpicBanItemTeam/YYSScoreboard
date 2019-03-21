@@ -4,9 +4,9 @@ import com.github.euonmyoji.yysscoreboard.YysScoreBoard;
 import com.github.euonmyoji.yysscoreboard.data.ObjectiveData;
 import com.github.euonmyoji.yysscoreboard.data.TabData;
 import com.github.euonmyoji.yysscoreboard.manager.LanguageManager;
+import com.github.euonmyoji.yysscoreboard.manager.TaskManager;
 import com.github.euonmyoji.yysscoreboard.task.DisplayObjective;
 import com.github.euonmyoji.yysscoreboard.task.DisplayTab;
-import com.github.euonmyoji.yysscoreboard.manager.TaskManager;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
@@ -64,29 +64,23 @@ public final class ScoreBoardConfig {
         cache.clear();
         List<TabData> tabData = new ArrayList<>();
         loadNode();
-        try {
-            cfg.getNode("scoreboards").getChildrenMap().forEach((o, task) -> {
-                String id = o.toString();
-                List<ObjectiveData> scoreBoardData = new ArrayList<>();
+        cfg.getNode("scoreboards").getChildrenMap().forEach((o, task) -> {
+            String id = o.toString();
+            List<ObjectiveData> scoreBoardData = new ArrayList<>();
 
-                task.getChildrenMap().forEach((o1, o2) -> {
-                    try {
-                        scoreBoardData.add(new ObjectiveData(o2, updateTick));
-                    } catch (ObjectMappingException e) {
-                        YysScoreBoard.logger.warn("scoreboard config error! where:", o.toString());
-                        YysScoreBoard.logger.warn("scoreboard config error!", e);
-                    }
-                });
-                TaskManager.registerTask(id, new DisplayObjective(scoreBoardData));
+            task.getChildrenMap().forEach((o1, o2) -> {
+                try {
+                    scoreBoardData.add(new ObjectiveData(o2, updateTick));
+                } catch (ObjectMappingException e) {
+                    YysScoreBoard.logger.warn("scoreboard config error! where:", o.toString());
+                    YysScoreBoard.logger.warn("scoreboard config error!", e);
+                }
             });
+            TaskManager.registerTask(id, new DisplayObjective(scoreBoardData));
+        });
 
-            YysScoreBoard.plugin.setDisplayTask(new DisplayObjective(scoreBoardData));
-        } catch (ObjectMappingException e) {
-            YysScoreBoard.logger.warn("scoreboard config error!", e);
-        }
-        cfg.getNode("tabs").getChildrenMap().forEach((o, o2) -> tabData.add(new TabData(o2, updateTick)));
-
-        YysScoreBoard.plugin.setDisplayTab(new DisplayTab(tabData));
+//        cfg.getNode("tabs").getChildrenMap().forEach((o, o2) -> tabData.add(new TabData(o2, updateTick))); todo:tab display
+//        YysScoreBoard.plugin.setDisplayTab(new DisplayTab(tabData))
         LanguageManager.reload();
     }
 
