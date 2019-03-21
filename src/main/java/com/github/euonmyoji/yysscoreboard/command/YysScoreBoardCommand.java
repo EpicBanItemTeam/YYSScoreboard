@@ -1,7 +1,7 @@
 package com.github.euonmyoji.yysscoreboard.command;
 
 import com.github.euonmyoji.yysscoreboard.YysScoreBoard;
-import com.github.euonmyoji.yysscoreboard.configuration.PlayerConfig;
+import com.github.euonmyoji.yysscoreboard.configuration.GlobalPlayerConfig;
 import com.github.euonmyoji.yysscoreboard.configuration.PluginConfig;
 import com.github.euonmyoji.yysscoreboard.configuration.ScoreBoardConfig;
 import com.github.euonmyoji.yysscoreboard.manager.LanguageManager;
@@ -12,11 +12,16 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.scoreboard.Scoreboard;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.Identifiable;
 
+import java.util.NoSuchElementException;
 import java.util.UUID;
+
+import static org.spongepowered.api.command.args.GenericArguments.*;
 
 /**
  * @author yinyangshi
@@ -28,16 +33,16 @@ public class YysScoreBoardCommand {
                 if (src instanceof Player) {
                     Runnable r = () -> {
                         UUID uuid = ((Player) src).getUniqueId();
-                        if (PlayerConfig.list.contains(uuid)) {
+                        if (GlobalPlayerConfig.list.contains(uuid)) {
                             src.sendMessage(Util.toText(LanguageManager.getString("yysscoreboard.command.off.already")));
                             Scoreboard sb = ((Player) src).getScoreboard();
                             sb.getObjective(ScoreBoardConfig.OBJECTIVE_NAME).ifPresent(sb::removeObjective);
                         } else {
-                            PlayerConfig.list.add(uuid);
+                            GlobalPlayerConfig.list.add(uuid);
                             Scoreboard sb = ((Player) src).getScoreboard();
                             sb.getObjective(ScoreBoardConfig.OBJECTIVE_NAME).ifPresent(sb::removeObjective);
                             try {
-                                PlayerConfig.saveList();
+                                GlobalPlayerConfig.saveList();
                                 src.sendMessage(Util.toText(LanguageManager.getString("yysscoreboard.command.off.successful")));
                             } catch (ObjectMappingException e) {
                                 YysScoreBoard.logger.warn("error while setting off", e);
@@ -59,7 +64,7 @@ public class YysScoreBoardCommand {
     private static final CommandSpec TOGGLE = CommandSpec.builder()
             .executor((src, args) -> {
                 if (src instanceof Player) {
-                    if (PlayerConfig.list.contains(((Player) src).getUniqueId())) {
+                    if (GlobalPlayerConfig.list.contains(((Player) src).getUniqueId())) {
                         Sponge.getCommandManager().process(src, "yyssb on");
                     } else {
                         Sponge.getCommandManager().process(src, "yyssb off");
@@ -76,11 +81,11 @@ public class YysScoreBoardCommand {
                 if (src instanceof Player) {
                     Runnable r = () -> {
                         UUID uuid = ((Player) src).getUniqueId();
-                        if (PlayerConfig.list.contains(uuid)) {
-                            PlayerConfig.list.remove(uuid);
+                        if (GlobalPlayerConfig.list.contains(uuid)) {
+                            GlobalPlayerConfig.list.remove(uuid);
                             TaskManager.setupPlayer(((Player) src));
                             try {
-                                PlayerConfig.saveList();
+                                GlobalPlayerConfig.saveList();
                                 src.sendMessage(Util.toText(LanguageManager.getString("yysscoreboard.command.on.successful")));
                             } catch (ObjectMappingException e) {
                                 YysScoreBoard.logger.warn("error while setting on", e);
@@ -97,6 +102,29 @@ public class YysScoreBoardCommand {
                         r.run();
                     }
                     return CommandResult.success();
+                }
+                return CommandResult.empty();
+            })
+            .build();
+
+    private static final CommandSpec USE = CommandSpec.builder()
+            .permission("yysscoreboard.command.use")
+            .arguments(onlyOne(userOrSource(Text.of("user"))),
+                    onlyOne(string(Text.of("id"))),
+                    flags().flag("-tab", "-t").buildWith(none()),
+                    flags().flag("-sb", "-scoreboard", "-objective").buildWith(none()))
+            .executor((src, args) -> {
+                User user = args.<User>getOne("user").orElseThrow(NoSuchElementException::new);
+                final String adminPermission = "yysscoreboard.admin.command.use";
+                if (src instanceof Identifiable && !((Identifiable) src).getUniqueId().equals(user.getUniqueId())
+                        && !src.hasPermission(adminPermission)) {
+                    src.sendMessage(Text.of("You don't have permission to do so."));
+
+                } else {
+
+                    boolean tab = args.hasAny("tab");
+                    boolean sb = args.hasAny("sb");
+                    String id = args.<String>getOne("id").orElseThrow(NoSuchElementException::new);
                 }
                 return CommandResult.empty();
             })
@@ -124,5 +152,6 @@ public class YysScoreBoardCommand {
             .child(ON, "on")
             .child(OFF, "off")
             .child(TOGGLE, "toggle")
+            .child(USE, "use")
             .build();
 }

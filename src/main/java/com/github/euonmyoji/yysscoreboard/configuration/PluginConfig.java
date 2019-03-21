@@ -1,7 +1,9 @@
 package com.github.euonmyoji.yysscoreboard.configuration;
 
 import com.github.euonmyoji.yysscoreboard.YysScoreBoard;
-import com.github.euonmyoji.yysscoreboard.task.DisplayPing;
+import com.github.euonmyoji.yysscoreboard.manager.TaskManager;
+import com.github.euonmyoji.yysscoreboard.task.DisplayNumber;
+import com.google.common.base.Strings;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
@@ -29,7 +31,6 @@ public final class PluginConfig {
     public static boolean asyncDefault = false;
     public static boolean asyncTab = false;
     public static int goalCount = 9;
-    public static boolean showPing = false;
     public static boolean hasSameScore = false;
     public static Set<UUID> noClear = new HashSet<>();
     public static int updateTick = 20;
@@ -70,9 +71,25 @@ public final class PluginConfig {
 
         ////////////extra///////////
         goalCount = cfg.getNode("extra", "parallelGoal").getInt(9);
-        showPing = cfg.getNode("extra", "showPing").getBoolean(false);
-        if (showPing) {
-            YysScoreBoard.plugin.setDisplayPing(new DisplayPing());
+        String showNumber = cfg.getNode("extra", "showNumber").getString("");
+        if (!Strings.isNullOrEmpty(showNumber)) {
+            DisplayNumber task;
+            switch (showNumber.toUpperCase()) {
+                case "PING": {
+                    task = new DisplayNumber(DisplayNumber.NumberSupplier.PING);
+                    break;
+                }
+                case "HEALTH":
+                case "HEALTHY": {
+                    task = new DisplayNumber(DisplayNumber.NumberSupplier.HEALTHY);
+                    break;
+                }
+                default: {
+                    task = new DisplayNumber(new DisplayNumber.NumberSupplier.Default(showNumber));
+                    break;
+                }
+            }
+            TaskManager.registerTask(task);
         }
     }
 

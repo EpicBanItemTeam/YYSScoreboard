@@ -1,14 +1,14 @@
 package com.github.euonmyoji.yysscoreboard;
 
 import com.github.euonmyoji.yysscoreboard.command.YysScoreBoardCommand;
-import com.github.euonmyoji.yysscoreboard.configuration.PlayerConfig;
+import com.github.euonmyoji.yysscoreboard.configuration.GlobalPlayerConfig;
 import com.github.euonmyoji.yysscoreboard.configuration.PluginConfig;
 import com.github.euonmyoji.yysscoreboard.configuration.ScoreBoardConfig;
 import com.github.euonmyoji.yysscoreboard.manager.PlaceHolderManager;
 import com.github.euonmyoji.yysscoreboard.manager.TaskManager;
 import com.github.euonmyoji.yysscoreboard.manager.TextManager;
 import com.github.euonmyoji.yysscoreboard.manager.TextManagerImpl;
-import com.github.euonmyoji.yysscoreboard.task.DisplayPing;
+import com.github.euonmyoji.yysscoreboard.task.DisplayNumber;
 import com.google.inject.Inject;
 import org.bstats.sponge.Metrics2;
 import org.slf4j.Logger;
@@ -51,7 +51,7 @@ public class YysScoreBoard {
     private boolean enabledPlaceHolderAPI = false;
     @Inject
     private Metrics2 metrics;
-    private DisplayPing displayPing;
+    private DisplayNumber displayPing;
 
     @Inject
     public void setLogger(Logger l) {
@@ -64,7 +64,7 @@ public class YysScoreBoard {
         try {
             Files.createDirectories(cfgDir);
             PluginConfig.init();
-            PlayerConfig.init();
+            GlobalPlayerConfig.init();
         } catch (IOException e) {
             logger.warn("init plugin IOE!", e);
         }
@@ -95,10 +95,9 @@ public class YysScoreBoard {
     @Listener(order = Order.LATE)
     public void onClientConnectionJoin(ClientConnectionEvent.Join event) {
         Player p = event.getTargetEntity();
-        ScoreBoardConfig.setPlayerScoreboard(p);
-        displayTask.setScoreBoard(p.getScoreboard(), p);
-        displayTab.setupPlayer(p);
+        TaskManager.setupPlayer(p);
     }
+
 
     @Listener
     public void onStopping(GameStoppingServerEvent event) {
@@ -106,7 +105,7 @@ public class YysScoreBoard {
                 .ifPresent(objective -> {
                     Scoreboard sb = ScoreBoardConfig.getStaticScoreBoard();
                     sb.removeObjective(objective);
-                    sb.getObjective(DisplayPing.PING_OBJECTIVE_NAME).ifPresent(sb::removeObjective);
+                    sb.getObjective(DisplayNumber.PING_OBJECTIVE_NAME).ifPresent(sb::removeObjective);
 
                 });
 
@@ -114,7 +113,7 @@ public class YysScoreBoard {
                 .forEach(scoreboard -> {
                     scoreboard.getObjective(ScoreBoardConfig.OBJECTIVE_NAME)
                             .ifPresent(scoreboard::removeObjective);
-                    scoreboard.getObjective(DisplayPing.PING_OBJECTIVE_NAME).ifPresent(scoreboard::removeObjective);
+                    scoreboard.getObjective(DisplayNumber.PING_OBJECTIVE_NAME).ifPresent(scoreboard::removeObjective);
                 });
     }
 
@@ -126,15 +125,12 @@ public class YysScoreBoard {
         }
         PluginConfig.reload();
         ScoreBoardConfig.reload();
-        PlayerConfig.reload();
-        if (PluginConfig.showPing) {
-            displayPing = new DisplayPing();
-        }
+        GlobalPlayerConfig.reload();
 
         TaskManager.update();
     }
 
-    public void setDisplayPing(DisplayPing task) {
+    public void setDisplayPing(DisplayNumber task) {
         if (this.displayPing != null) {
             this.displayPing.cancel();
         }

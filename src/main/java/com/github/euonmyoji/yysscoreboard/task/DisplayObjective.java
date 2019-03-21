@@ -1,7 +1,7 @@
 package com.github.euonmyoji.yysscoreboard.task;
 
 import com.github.euonmyoji.yysscoreboard.YysScoreBoard;
-import com.github.euonmyoji.yysscoreboard.configuration.PlayerConfig;
+import com.github.euonmyoji.yysscoreboard.configuration.GlobalPlayerConfig;
 import com.github.euonmyoji.yysscoreboard.configuration.PluginConfig;
 import com.github.euonmyoji.yysscoreboard.data.ObjectiveData;
 import org.spongepowered.api.Sponge;
@@ -53,7 +53,7 @@ public class DisplayObjective implements IDisplayTask {
         boolean setStatic = false;
         Scoreboard sb;
         for (Player p : players) {
-            if (PlayerConfig.list.contains(p.getUniqueId())) {
+            if (GlobalPlayerConfig.list.contains(p.getUniqueId())) {
                 sb = p.getScoreboard();
                 sb.getObjective(OBJECTIVE_NAME).ifPresent(sb::removeObjective);
             } else {
@@ -79,7 +79,7 @@ public class DisplayObjective implements IDisplayTask {
     public void setupPlayer(Player p) {
         if (running) {
             Scoreboard sb;
-            if (PlayerConfig.list.contains(p.getUniqueId())) {
+            if (GlobalPlayerConfig.list.contains(p.getUniqueId())) {
                 sb = p.getScoreboard();
                 sb.getObjective(OBJECTIVE_NAME).ifPresent(sb::removeObjective);
             } else {

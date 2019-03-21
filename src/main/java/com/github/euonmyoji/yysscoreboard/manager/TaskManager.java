@@ -1,5 +1,6 @@
 package com.github.euonmyoji.yysscoreboard.manager;
 
+import com.github.euonmyoji.yysscoreboard.task.DisplayNumber;
 import com.github.euonmyoji.yysscoreboard.task.DisplayObjective;
 import com.github.euonmyoji.yysscoreboard.task.DisplayTab;
 import com.github.euonmyoji.yysscoreboard.task.IDisplayTask;
@@ -15,7 +16,7 @@ import java.util.HashMap;
 public class TaskManager {
     private static HashMap<String, DisplayObjective> objectives = new HashMap<>();
     private static HashMap<String, DisplayTab> tabs = new HashMap<>();
-
+    private static DisplayNumber displayNumber;
 
     public static void registerTask(String id, DisplayObjective displayObjective) {
 
@@ -23,6 +24,13 @@ public class TaskManager {
 
     public static void registerTask(String id, DisplayTab displayObjective) {
 
+    }
+
+    public static void registerTask(DisplayNumber task) {
+        if(displayNumber != null) {
+            displayNumber.cancel();
+        }
+        displayNumber = task;
     }
 
     public static void setupPlayer(Player p) {

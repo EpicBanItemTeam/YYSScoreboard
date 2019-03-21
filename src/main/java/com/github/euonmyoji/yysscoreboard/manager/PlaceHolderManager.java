@@ -22,7 +22,7 @@ public class PlaceHolderManager implements TextManager {
         return instance;
     }
 
-    private final PlaceholderService service;
+    public final PlaceholderService service;
 
     @Override
     public Text toText(String s, @Nullable Player p) {
