@@ -1,5 +1,7 @@
 package com.github.euonmyoji.yysscoreboard.data;
 
+import co.aikar.timings.Timing;
+import co.aikar.timings.Timings;
 import com.github.euonmyoji.yysscoreboard.YysScoreBoard;
 import com.github.euonmyoji.yysscoreboard.util.RandomDelay;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -51,37 +53,47 @@ public class ObjectiveData {
     }
 
     public Objective setObjective(@Nullable Objective objective, @Nullable Player p) {
-        if (objective == null) {
-            objective = Objective.builder()
-                    .objectiveDisplayMode(ObjectiveDisplayModes.INTEGER)
-                    .name(OBJECTIVE_NAME)
-                    .criterion(Criteria.DUMMY)
-                    .build();
-        }
-        objective.setDisplayName(textManager.toText(title, p));
-        Map<Text, Score> map = objective.getScores();
-        if (hasSameScore) {
-            map.values().forEach(objective::removeScore);
-        }
-        for (ScoreRawData data : lines) {
-            Text text = textManager.toText(data.text, p);
-
+        try (Timing timing = Timings.of(YysScoreBoard.plugin, "Get Objective")) {
+            timing.startTimingIfSync();
+            if (objective == null) {
+                objective = Objective.builder()
+                        .objectiveDisplayMode(ObjectiveDisplayModes.INTEGER)
+                        .name(OBJECTIVE_NAME)
+                        .criterion(Criteria.DUMMY)
+                        .build();
+            }
+            objective.setDisplayName(textManager.toText(title, p));
+            Map<Text, Score> map = objective.getScores();
             if (hasSameScore) {
-                Score score = objective.getOrCreateScore(text);
-                score.setScore(data.score);
+                map.values().forEach(objective::removeScore);
             } else {
-                Set<Text> keys = new HashSet<>();
-                List<Score> cache = new ArrayList<>();
-                map.forEach((text1, score) -> {
-                    if (score.getScore() == data.score && !text.equals(text1)) {
-                        keys.add(text1);
-                        cache.add(score);
+                for (Score value : map.values()) {
+                    if (lines.stream().allMatch(data -> data.score != value.getScore())) {
+                        objective.removeScore(value);
                     }
-                });
-                Score score = objective.getOrCreateScore(text);
-                score.setScore(data.score);
-                keys.forEach(map::remove);
-                cache.forEach(objective::removeScore);
+                }
+            }
+
+            for (ScoreRawData data : lines) {
+                Text text = textManager.toText(data.text, p);
+
+                if (hasSameScore) {
+                    Score score = objective.getOrCreateScore(text);
+                    score.setScore(data.score);
+                } else {
+                    Set<Text> keys = new HashSet<>();
+                    List<Score> cache = new ArrayList<>();
+                    map.forEach((text1, score) -> {
+                        if (score.getScore() == data.score && !text.equals(text1)) {
+                            keys.add(text1);
+                            cache.add(score);
+                        }
+                    });
+                    Score score = objective.getOrCreateScore(text);
+                    score.setScore(data.score);
+                    keys.forEach(map::remove);
+                    cache.forEach(objective::removeScore);
+                }
             }
         }
         return objective;
