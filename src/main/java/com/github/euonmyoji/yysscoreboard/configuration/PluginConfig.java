@@ -38,7 +38,7 @@ public final class PluginConfig {
     public static boolean asyncTab = false;
     public static int goalCount = 9;
     public static boolean hasSameScore = false;
-    public static Set<UUID> noClear = new HashSet<>();
+    static Set<UUID> noClear = new HashSet<>();
     public static int updateTick = 20;
     public static boolean isStableMode = true;
     static boolean cacheScoreboard = true;

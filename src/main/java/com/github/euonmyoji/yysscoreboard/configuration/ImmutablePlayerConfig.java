@@ -5,6 +5,7 @@ import java.util.UUID;
 /**
  * @author yinyangshi
  */
+@SuppressWarnings("unused for future")
 public class ImmutablePlayerConfig implements PlayerConfig {
     private final String objectiveID;
     private final String tabID;
@@ -15,7 +16,7 @@ public class ImmutablePlayerConfig implements PlayerConfig {
         this(pc.getDisplayObjectiveID(), pc.getDisplayTabID(), pc.isToggle(), pc.getUUID());
     }
 
-    public ImmutablePlayerConfig(String objectiveID, String tabID, boolean toggle, UUID uuid) {
+    private ImmutablePlayerConfig(String objectiveID, String tabID, boolean toggle, UUID uuid) {
         this.objectiveID = objectiveID;
         this.tabID = tabID;
         this.toggle = toggle;
