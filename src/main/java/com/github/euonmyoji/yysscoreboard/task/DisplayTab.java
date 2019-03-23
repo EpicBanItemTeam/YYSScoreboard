@@ -40,7 +40,10 @@ public class DisplayTab implements IDisplayTask {
             try {
                 builder.delayTicks(data.get(index).delay.getDelay());
                 Util.getStream(Sponge.getServer().getOnlinePlayers())
-                        .filter(p -> id.equals(TaskManager.usingCache.get(p.getUniqueId()).second))
+                        .filter(p -> {
+                            Pair<String, String> pair = TaskManager.usingCache.get(p.getUniqueId());
+                            return pair != null && id.equals(TaskManager.usingCache.get(p.getUniqueId()).first);
+                        })
                         .forEach(cur::setTab);
                 if (++index >= data.size()) {
                     index = 0;

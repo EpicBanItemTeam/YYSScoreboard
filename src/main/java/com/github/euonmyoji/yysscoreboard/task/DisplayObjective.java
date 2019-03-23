@@ -18,6 +18,7 @@ import org.spongepowered.api.scoreboard.objective.Objective;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static com.github.euonmyoji.yysscoreboard.configuration.ScoreBoardConfig.OBJECTIVE_NAME;
 import static com.github.euonmyoji.yysscoreboard.configuration.ScoreBoardConfig.getPlayerScoreboard;
@@ -47,30 +48,32 @@ public class DisplayObjective implements IDisplayTask {
             Task.Builder builder = Task.builder().execute(this);
             try {
                 cur = data.get(index);
+                Stream<Player> stream = Util.getStream(Sponge.getServer().getOnlinePlayers())
+                        .filter(p -> {
+                            if (!GlobalPlayerConfig.list.contains(p.getUniqueId())) {
+                                Pair<String, String> pair = TaskManager.usingCache.get(p.getUniqueId());
+                                return pair != null && id.equals(TaskManager.usingCache.get(p.getUniqueId()).first);
+                            }
+                            return false;
+                        });
                 if (PluginConfig.isStaticMode) {
                     ObjectiveData curData = data.get(index);
-                    Util.getStream(Sponge.getServer().getOnlinePlayers())
-                            .filter(p -> !GlobalPlayerConfig.list.contains(p.getUniqueId())
-                                    && id.equals(TaskManager.usingCache.get(p.getUniqueId()).first))
-                            .map(player -> {
-                                Scoreboard sb = player.getScoreboard();
-                                Objective objective = sb.getObjective(OBJECTIVE_NAME).orElse(null);
-                                if (objective == null) {
-                                    objective = cur.setObjective(null, player);
-                                    sb.addObjective(objective);
-                                    sb.updateDisplaySlot(objective, DisplaySlots.SIDEBAR);
-                                    return null;
-                                }
-                                return objective;
-                            })
+                    stream.map(player -> {
+                        Scoreboard sb = player.getScoreboard();
+                        Objective objective = sb.getObjective(OBJECTIVE_NAME).orElse(null);
+                        if (objective == null) {
+                            objective = cur.setObjective(null, player);
+                            sb.addObjective(objective);
+                            sb.updateDisplaySlot(objective, DisplaySlots.SIDEBAR);
+                            return null;
+                        }
+                        return objective;
+                    })
                             .distinct()
                             .filter(Objects::nonNull)
                             .forEach(objective -> curData.setObjective(objective, null));
                 } else {
-                    Util.getStream(Sponge.getServer().getOnlinePlayers())
-                            .filter(p -> !GlobalPlayerConfig.list.contains(p.getUniqueId())
-                                    && id.equals(TaskManager.usingCache.get(p.getUniqueId()).first))
-                            .forEach(this::setupPlayer);
+                    stream.forEach(this::setupPlayer);
                 }
 
                 if (PluginConfig.asyncSidebar) {
