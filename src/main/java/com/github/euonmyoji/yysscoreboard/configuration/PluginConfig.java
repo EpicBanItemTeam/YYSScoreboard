@@ -10,6 +10,9 @@ import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -25,7 +28,10 @@ public final class PluginConfig {
     private static final String STATIC_MODE = "static";
     private static final String SAME_SCORE_MODE = "same-score";
     private static final String UPDATE_TICK = "update-interval-tick";
+    private static final String DATA_DIR = "data-dir-path";
     private static final String CACHE_SCOREBOARD = "cache-scoreboard";
+    public static Path cfgDir;
+    public static Path defaultCfgDir;
     public static boolean isStaticMode = false;
     public static boolean asyncSidebar = false;
     public static boolean asyncDefault = false;
@@ -34,7 +40,7 @@ public final class PluginConfig {
     public static boolean hasSameScore = false;
     public static Set<UUID> noClear = new HashSet<>();
     public static int updateTick = 20;
-    static boolean isStableMode = true;
+    public static boolean isStableMode = true;
     static boolean cacheScoreboard = true;
     private static CommentedConfigurationNode cfg;
     private static CommentedConfigurationNode generalNode;
@@ -46,7 +52,7 @@ public final class PluginConfig {
 
     public static void init() {
         loader = HoconConfigurationLoader.builder()
-                .setPath(YysScoreBoard.plugin.cfgDir.resolve("config.conf")).build();
+                .setPath(defaultCfgDir.resolve("config.conf")).build();
         reload();
         setComment();
         save();
@@ -68,6 +74,18 @@ public final class PluginConfig {
         asyncTab = modes.getNode("async-update", "tab").getBoolean(false);
         asyncDefault = modes.getNode("async-update", "default").getBoolean(false);
         updateTick = generalNode.getNode(UPDATE_TICK).getInt(20);
+
+        String path = generalNode.getNode(DATA_DIR).getString("default");
+        cfgDir = "default".equals(path) ? defaultCfgDir : Paths.get(path);
+        YysScoreBoard.logger.info("using data dir path:" + cfgDir);
+
+        try {
+            Files.createDirectories(cfgDir.resolve("PlayerData"));
+            Files.createDirectories(cfgDir.resolve("scoreboards"));
+            Files.createDirectories(cfgDir.resolve("tabs"));
+        } catch (IOException e) {
+            YysScoreBoard.logger.warn("create dir failed", e);
+        }
 
         ////////////extra///////////
         goalCount = cfg.getNode("extra", "parallelGoal").getInt(9);

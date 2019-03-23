@@ -2,6 +2,7 @@ package com.github.euonmyoji.yysscoreboard.command;
 
 import com.github.euonmyoji.yysscoreboard.YysScoreBoard;
 import com.github.euonmyoji.yysscoreboard.configuration.GlobalPlayerConfig;
+import com.github.euonmyoji.yysscoreboard.configuration.PlayerConfig;
 import com.github.euonmyoji.yysscoreboard.configuration.PluginConfig;
 import com.github.euonmyoji.yysscoreboard.configuration.ScoreBoardConfig;
 import com.github.euonmyoji.yysscoreboard.manager.LanguageManager;
@@ -18,6 +19,7 @@ import org.spongepowered.api.scoreboard.Scoreboard;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.Identifiable;
 
+import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -36,11 +38,20 @@ public class YysScoreBoardCommand {
                         if (GlobalPlayerConfig.list.contains(uuid)) {
                             src.sendMessage(Util.toText(LanguageManager.getString("yysscoreboard.command.off.already")));
                             Scoreboard sb = ((Player) src).getScoreboard();
-                            sb.getObjective(ScoreBoardConfig.OBJECTIVE_NAME).ifPresent(sb::removeObjective);
+                            if (PluginConfig.isStaticMode || PluginConfig.isStableMode) {
+                                ((Player) src).setScoreboard(Scoreboard.builder().build());
+                            } else {
+                                sb.getObjective(ScoreBoardConfig.OBJECTIVE_NAME).ifPresent(sb::removeObjective);
+                            }
                         } else {
                             GlobalPlayerConfig.list.add(uuid);
                             Scoreboard sb = ((Player) src).getScoreboard();
-                            sb.getObjective(ScoreBoardConfig.OBJECTIVE_NAME).ifPresent(sb::removeObjective);
+                            if (PluginConfig.isStaticMode || PluginConfig.isStableMode) {
+                                ((Player) src).setScoreboard(Scoreboard.builder().build());
+                            } else {
+                                sb.getObjective(ScoreBoardConfig.OBJECTIVE_NAME).ifPresent(sb::removeObjective);
+                            }
+
                             try {
                                 GlobalPlayerConfig.saveList();
                                 src.sendMessage(Util.toText(LanguageManager.getString("yysscoreboard.command.off.successful")));
@@ -118,13 +129,30 @@ public class YysScoreBoardCommand {
                 final String adminPermission = "yysscoreboard.admin.command.use";
                 if (src instanceof Identifiable && !((Identifiable) src).getUniqueId().equals(user.getUniqueId())
                         && !src.hasPermission(adminPermission)) {
-                    src.sendMessage(Text.of("You don't have permission to do so."));
+                    src.sendMessage(Util.toText(LanguageManager.getString("yysscoreboard.command.use.noPermission")));
 
                 } else {
-
-                    boolean tab = args.hasAny("tab");
-                    boolean sb = args.hasAny("sb");
-                    String id = args.<String>getOne("id").orElseThrow(NoSuchElementException::new);
+                    try {
+                        PlayerConfig pc = PlayerConfig.of(user.getUniqueId());
+                        boolean tab = args.hasAny("tab");
+                        boolean sb = args.hasAny("sb");
+                        String id = args.<String>getOne("id").orElseThrow(NoSuchElementException::new);
+                        if (!tab && !sb) {
+                            pc.setDisplayObjectiveID(id);
+                            pc.setDisplayTabID(id);
+                        }
+                        if (tab) {
+                            pc.setDisplayTabID(id);
+                        }
+                        if (sb) {
+                            pc.setDisplayObjectiveID(id);
+                        }
+                        src.sendMessage(Util.toText(LanguageManager.getString("yysscoreboard.command.use.successful")));
+                        return CommandResult.success();
+                    } catch (IOException e) {
+                        src.sendMessage(Util.toText(LanguageManager.getString("yysscoreboard.command.use.exception")));
+                        YysScoreBoard.logger.warn("load player config failed", e);
+                    }
                 }
                 return CommandResult.empty();
             })

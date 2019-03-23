@@ -1,5 +1,9 @@
 package com.github.euonmyoji.yysscoreboard.configuration;
 
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
+
+import java.io.IOException;
 import java.util.UUID;
 
 /**
@@ -7,29 +11,52 @@ import java.util.UUID;
  */
 public class LocalHoconPlayerConfig implements PlayerConfig {
     private final UUID uuid;
+    private final HoconConfigurationLoader loader;
+    private final CommentedConfigurationNode cfg;
 
-    public LocalHoconPlayerConfig(UUID uuid) {
+    LocalHoconPlayerConfig(UUID uuid) throws IOException {
         this.uuid = uuid;
+        loader = HoconConfigurationLoader.builder().setPath(PluginConfig.cfgDir.resolve("PlayerData").resolve(uuid + ".conf")).build();
+        cfg = loader.load();
+    }
+
+    @Override
+    public void init() {
+
     }
 
     @Override
     public String getDisplayObjectiveID() {
-        return null;
+        return cfg.getNode("use-id", "objective").getString("main");
     }
 
     @Override
-    public void setDisplayObjectiveID(String id) {
-
+    public void setDisplayObjectiveID(String id) throws IOException {
+        cfg.getNode("use-id", "objective").setValue(id);
+        save();
     }
 
     @Override
     public String getDisplayTabID() {
-        return null;
+        return cfg.getNode("use-id", "tab").getString("main");
+
     }
 
     @Override
-    public void setDisplayTabID(String id) {
+    public boolean isToggle()  {
+        return cfg.getNode("toggle").getBoolean(true);
+    }
 
+    @Override
+    public void setToggle(boolean toggle) throws IOException {
+        cfg.getNode("toggle").setValue(toggle);
+        save();
+    }
+
+    @Override
+    public void setDisplayTabID(String id) throws IOException {
+        cfg.getNode("use-id", "tab").setValue(id);
+        save();
     }
 
     @Override
@@ -37,7 +64,7 @@ public class LocalHoconPlayerConfig implements PlayerConfig {
         return this.uuid;
     }
 
-    public void save() {
-
+    private void save() throws IOException {
+        loader.save(cfg);
     }
 }

@@ -1,6 +1,7 @@
 package com.github.euonmyoji.yysscoreboard.data;
 
 import com.github.euonmyoji.yysscoreboard.YysScoreBoard;
+import com.github.euonmyoji.yysscoreboard.util.RandomDelay;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.entity.living.player.Player;
@@ -18,16 +19,15 @@ import java.util.stream.Collectors;
 
 import static com.github.euonmyoji.yysscoreboard.YysScoreBoard.textManager;
 import static com.github.euonmyoji.yysscoreboard.configuration.PluginConfig.hasSameScore;
-import static com.github.euonmyoji.yysscoreboard.configuration.PluginConfig.noClear;
 import static com.github.euonmyoji.yysscoreboard.configuration.ScoreBoardConfig.OBJECTIVE_NAME;
 
 /**
  * @author yinyangshi
  */
 public class ObjectiveData {
+    public final RandomDelay delay;
     private final List<ScoreRawData> lines;
     private final String title;
-    public final int delay;
 
     public ObjectiveData(CommentedConfigurationNode node, int delay) throws ObjectMappingException {
         List<String> list = node.getNode("lines").getList(TypeTokens.STRING_TOKEN);
@@ -47,10 +47,10 @@ public class ObjectiveData {
                     }
                 }).collect(Collectors.toList());
         title = node.getNode("title").getString("YYS Scoreboard");
-        this.delay = node.getNode("delay").getInt(delay);
+        this.delay = new RandomDelay(node.getNode("delay").getString(delay + ""));
     }
 
-    public Objective setObjective(@Nullable Objective objective, Player p) {
+    public Objective setObjective(@Nullable Objective objective, @Nullable Player p) {
         if (objective == null) {
             objective = Objective.builder()
                     .objectiveDisplayMode(ObjectiveDisplayModes.INTEGER)
@@ -58,18 +58,10 @@ public class ObjectiveData {
                     .criterion(Criteria.DUMMY)
                     .build();
         }
-        try {
-            objective.setDisplayName(textManager.toText(title, p));
-        } catch (NullPointerException e) {
-            YysScoreBoard.logger.warn("I don't know why NPE, title:" + title + ", player:" + p);
-        }
+        objective.setDisplayName(textManager.toText(title, p));
+        YysScoreBoard.logger.warn("I don't know why NPE, title:" + title + ", player:" + p);
         Map<Text, Score> map = objective.getScores();
-        if (!noClear.contains(p.getUniqueId())) {
-            map.values().forEach(objective::removeScore);
-            noClear.add(p.getUniqueId());
-            map = null;
-        }
-        if (hasSameScore && map != null) {
+        if (hasSameScore) {
             map.values().forEach(objective::removeScore);
         }
         for (ScoreRawData data : lines) {
@@ -78,7 +70,7 @@ public class ObjectiveData {
             if (hasSameScore) {
                 Score score = objective.getOrCreateScore(text);
                 score.setScore(data.score);
-            } else if (map != null) {
+            } else {
                 Set<Text> keys = new HashSet<>();
                 List<Score> cache = new ArrayList<>();
                 map.forEach((text1, score) -> {
@@ -91,9 +83,6 @@ public class ObjectiveData {
                 score.setScore(data.score);
                 keys.forEach(map::remove);
                 cache.forEach(objective::removeScore);
-            } else {
-                Score score = objective.getOrCreateScore(text);
-                score.setScore(data.score);
             }
         }
         return objective;

@@ -22,7 +22,7 @@ public class LanguageManager {
 
     public static void init() {
         try {
-            Files.createDirectories(YysScoreBoard.plugin.cfgDir.resolve("lang"));
+            Files.createDirectories(PluginConfig.cfgDir.resolve("lang"));
         } catch (IOException e) {
             YysScoreBoard.logger.warn("create lang dir error", e);
         }
@@ -30,7 +30,7 @@ public class LanguageManager {
             Sponge.getAssetManager().getAsset(YysScoreBoard.plugin, lang)
                     .ifPresent(asset -> {
                         try {
-                            asset.copyToFile(YysScoreBoard.plugin.cfgDir.resolve(lang));
+                            asset.copyToFile(PluginConfig.cfgDir.resolve(lang));
                         } catch (IOException e) {
                             YysScoreBoard.logger.warn("copy language file error", e);
                         }
@@ -40,7 +40,7 @@ public class LanguageManager {
 
     private static void check() {
         try {
-            Path langFolder = YysScoreBoard.plugin.cfgDir.resolve("lang");
+            Path langFolder = PluginConfig.cfgDir.resolve("lang");
             if (Files.notExists(langFolder)) {
                 Files.createDirectory(langFolder);
             }
@@ -52,7 +52,7 @@ public class LanguageManager {
                 }
             } catch (FileNotFoundException ignore) {
                 YysScoreBoard.logger.info("locale language file not found");
-                langFile = YysScoreBoard.plugin.cfgDir.resolve("lang/en_US.lang");
+                langFile = PluginConfig.cfgDir.resolve("lang/en_US.lang");
                 Sponge.getAssetManager().getAsset(YysScoreBoard.plugin, "lang/en_US.lang")
                         .orElseThrow(() -> new IOException("asset didn't found language file!"))
                         .copyToFile(langFile);
@@ -73,7 +73,7 @@ public class LanguageManager {
     public static void reload() {
         try {
             lang = PluginConfig.getUsingLang();
-            langFile = YysScoreBoard.plugin.cfgDir.resolve("lang/" + lang + ".lang");
+            langFile = PluginConfig.cfgDir.resolve("lang/" + lang + ".lang");
             check();
             res = new PropertyResourceBundle(Files.newBufferedReader(langFile, Charset.forName("UTF8")));
         } catch (IOException e) {

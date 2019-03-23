@@ -2,6 +2,7 @@ package com.github.euonmyoji.yysscoreboard;
 
 import com.github.euonmyoji.yysscoreboard.command.YysScoreBoardCommand;
 import com.github.euonmyoji.yysscoreboard.configuration.GlobalPlayerConfig;
+import com.github.euonmyoji.yysscoreboard.configuration.PlayerConfig;
 import com.github.euonmyoji.yysscoreboard.configuration.PluginConfig;
 import com.github.euonmyoji.yysscoreboard.configuration.ScoreBoardConfig;
 import com.github.euonmyoji.yysscoreboard.manager.PlaceHolderManager;
@@ -31,6 +32,7 @@ import org.spongepowered.api.text.Text;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.UUID;
 //https://api.github.com/repos/euOnmyoji/YYSScoreboard/releases
 
 /**
@@ -45,29 +47,28 @@ public class YysScoreBoard {
     public static TextManager textManager;
     public static Logger logger;
     public static YysScoreBoard plugin;
-    @Inject
-    @ConfigDir(sharedRoot = false)
-    public Path cfgDir;
     private boolean enabledPlaceHolderAPI = false;
-    @Inject
     private Metrics2 metrics;
-    private DisplayNumber displayPing;
 
     @Inject
-    public void setLogger(Logger l) {
-        logger = l;
+    public YysScoreBoard(@ConfigDir(sharedRoot = false) Path cfgDir, Logger logger, Metrics2 metrics) {
+        plugin = this;
+        PluginConfig.defaultCfgDir = cfgDir;
+        try {
+            Files.createDirectories(cfgDir);
+        } catch (IOException e) {
+            logger.warn("create dir failed", e);
+        }
+
+        YysScoreBoard.logger = logger;
+        this.metrics = metrics;
     }
+
 
     @Listener
     public void onPreInit(GamePreInitializationEvent event) {
-        plugin = this;
-        try {
-            Files.createDirectories(cfgDir);
-            PluginConfig.init();
-            GlobalPlayerConfig.init();
-        } catch (IOException e) {
-            logger.warn("init plugin IOE!", e);
-        }
+        PluginConfig.init();
+        GlobalPlayerConfig.init();
     }
 
     @Listener
@@ -95,7 +96,14 @@ public class YysScoreBoard {
     @Listener(order = Order.LATE)
     public void onClientConnectionJoin(ClientConnectionEvent.Join event) {
         Player p = event.getTargetEntity();
-        TaskManager.setupPlayer(p);
+        UUID uuid = p.getUniqueId();
+        try {
+            PlayerConfig pc = PlayerConfig.of(uuid);
+            pc.init();
+            TaskManager.update(p, pc);
+        } catch (IOException e) {
+            logger.warn("load failed", e);
+        }
     }
 
 
@@ -119,22 +127,11 @@ public class YysScoreBoard {
 
 
     public void reload() {
-        //todo: reload v0.2.0
-        if (displayPing != null) {
-            displayPing.cancel();
-        }
         PluginConfig.reload();
         ScoreBoardConfig.reload();
         GlobalPlayerConfig.reload();
 
         TaskManager.update();
-    }
-
-    public void setDisplayPing(DisplayNumber task) {
-        if (this.displayPing != null) {
-            this.displayPing.cancel();
-        }
-        this.displayPing = task;
     }
 
     private void hook() {

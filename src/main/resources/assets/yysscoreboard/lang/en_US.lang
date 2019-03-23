@@ -1,4 +1,7 @@
-yysscoreboard.command.on.successful=[YYSSB]Enable scoreboard successful
-yysscoreboard.command.on.already=[YYSSB]You've enabled scoreboard already
-yysscoreboard.command.off.successful=[YYSSB]Disable scoreboard successful
-yysscoreboard.command.off.already=[YYSSB]You've disabled scoreboard already
+yysscoreboard.command.on.successful=[YYSSB]Enable scoreboard successful.
+yysscoreboard.command.on.already=[YYSSB]You've enabled scoreboard already.
+yysscoreboard.command.off.successful=[YYSSB]Disable scoreboard successful.
+yysscoreboard.command.off.already=[YYSSB]You've disabled scoreboard already.
+yysscoreboard.command.use.successful=[YYSSB]Change using id successful.
+yysscoreboard.command.use.noPermission=[YYSSB]You don't have permission to do so.
+yysscoreboard.command.use.exception=[YYSSB]An error!

@@ -7,6 +7,7 @@ import com.github.euonmyoji.yysscoreboard.manager.LanguageManager;
 import com.github.euonmyoji.yysscoreboard.manager.TaskManager;
 import com.github.euonmyoji.yysscoreboard.task.DisplayObjective;
 import com.github.euonmyoji.yysscoreboard.task.DisplayTab;
+import com.github.euonmyoji.yysscoreboard.util.RandomID;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
@@ -45,42 +46,60 @@ public final class ScoreBoardConfig {
     }
 
     public static void init() {
-        cfgPath = YysScoreBoard.plugin.cfgDir.resolve("scoreboard.conf");
-        loader = HoconConfigurationLoader.builder()
-                .setPath(cfgPath).build();
-        if (Files.notExists(cfgPath)) {
-            setExample();
-        } else {
-            loadNode();
-            checkUpdate();
-        }
         reload();
         LanguageManager.init();
     }
 
     public static void reload() {
+        cfgPath = cfgDir.resolve("scoreboard.conf");
+        loader = HoconConfigurationLoader.builder()
+                .setPath(cfgPath).build();
+        if (Files.notExists(cfgPath)) {
+            loadNode();
+            setExample();
+        } else {
+            loadNode();
+            checkUpdate();
+        }
         TaskManager.clear();
         noClear.clear();
         cache.clear();
-        List<TabData> tabData = new ArrayList<>();
         loadNode();
+        final String settingsKey = "settings";
         cfg.getNode("scoreboards").getChildrenMap().forEach((o, task) -> {
             String id = o.toString();
             List<ObjectiveData> scoreBoardData = new ArrayList<>();
 
             task.getChildrenMap().forEach((o1, o2) -> {
                 try {
-                    scoreBoardData.add(new ObjectiveData(o2, updateTick));
+                    if (!o1.toString().equals(settingsKey)) {
+                        scoreBoardData.add(new ObjectiveData(o2, updateTick));
+                    }
                 } catch (ObjectMappingException e) {
                     YysScoreBoard.logger.warn("scoreboard config error! where:", o.toString());
                     YysScoreBoard.logger.warn("scoreboard config error!", e);
                 }
             });
-            TaskManager.registerTask(id, new DisplayObjective(scoreBoardData));
+            RandomID randomID = null;
+            if (!cfg.getNode(settingsKey).isVirtual()) {
+                randomID = new RandomID(cfg.getNode(settingsKey, "next").getString());
+            }
+            TaskManager.registerTask(id, new DisplayObjective(id, scoreBoardData, randomID));
         });
-
-//        cfg.getNode("tabs").getChildrenMap().forEach((o, o2) -> tabData.add(new TabData(o2, updateTick))); todo:tab display
-//        YysScoreBoard.plugin.setDisplayTab(new DisplayTab(tabData))
+        cfg.getNode("tabs").getChildrenMap().forEach((o, task) -> {
+            String id = o.toString();
+            List<TabData> tabData = new ArrayList<>();
+            task.getChildrenMap().forEach((o1, o2) -> {
+                if (!o1.toString().equals(settingsKey)) {
+                    tabData.add(new TabData(o2, updateTick));
+                }
+            });
+            RandomID randomID = null;
+            if (!cfg.getNode(settingsKey).isVirtual()) {
+                randomID = new RandomID(cfg.getNode(settingsKey, "next").getString());
+            }
+            TaskManager.registerTask(id, new DisplayTab(id, tabData, randomID));
+        });
         LanguageManager.reload();
     }
 
@@ -143,11 +162,10 @@ public final class ScoreBoardConfig {
     }
 
     private static void setExample() {
-        loadNode();
         cfg.getNode(VERSION_KEY).setValue(CONFIG_VERSION);
         try {
             //tab node//////////////////////////////////////////////
-            CommentedConfigurationNode node = cfg.getNode("tabs", "example");
+            CommentedConfigurationNode node = cfg.getNode("tabs", "main", "example");
             node.getNode("header").getString("Header~");
             node.getNode("footer").getString("Footer~");
             node.getNode("prefix").getString("[prefix]");
@@ -157,7 +175,7 @@ public final class ScoreBoardConfig {
 
 
             //sb node///////////////////////////////////////////////
-            node = cfg.getNode("scoreboards", "example");
+            node = cfg.getNode("scoreboards", "main", "example");
             node.getNode("delay").getInt(20);
             node.getNode("lines").getList(TypeTokens.STRING_TOKEN, new ArrayList<String>() {{
                 add("&4少女祈祷中;;233");
@@ -166,7 +184,7 @@ public final class ScoreBoardConfig {
             }});
             node.getNode("title").getString("Gensokyo Info(x)");
             //sb node2///////////////////////////////////////////////
-            node = cfg.getNode("scoreboards", "example2");
+            node = cfg.getNode("scoreboards", "main", "example2");
             node.getNode("delay").getInt(20);
             node.getNode("lines").getList(TypeTokens.STRING_TOKEN, new ArrayList<String>() {{
                 add("&2少女祈祷中;;233");
@@ -186,7 +204,7 @@ public final class ScoreBoardConfig {
             YysScoreBoard.logger.warn("The config is out-of-date (version :0) and latest version is ", CONFIG_VERSION);
             YysScoreBoard.logger.warn("backup config now");
 
-            Path backupDir = YysScoreBoard.plugin.cfgDir.resolve("oldConfig");
+            Path backupDir = defaultCfgDir.resolve("oldConfig");
             try {
                 Files.createDirectories(backupDir);
                 Path backupCfgFile = backupDir.resolve("V" + version + "scoreboard.conf");

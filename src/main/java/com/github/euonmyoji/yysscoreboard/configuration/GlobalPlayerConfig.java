@@ -29,7 +29,7 @@ public class GlobalPlayerConfig {
 
     public static void init() {
         loader = HoconConfigurationLoader.builder()
-                .setPath(YysScoreBoard.plugin.cfgDir.resolve("playerdata.conf")).build();
+                .setPath(PluginConfig.cfgDir.resolve("playerdata.conf")).build();
         reload();
         save();
     }

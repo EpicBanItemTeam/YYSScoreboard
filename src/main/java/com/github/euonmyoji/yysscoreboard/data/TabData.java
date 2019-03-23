@@ -1,5 +1,6 @@
 package com.github.euonmyoji.yysscoreboard.data;
 
+import com.github.euonmyoji.yysscoreboard.util.RandomDelay;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -12,7 +13,7 @@ import static com.github.euonmyoji.yysscoreboard.YysScoreBoard.textManager;
  * @author yinyangshi
  */
 public class TabData {
-    public final int delay;
+    public final RandomDelay delay;
     private final String header;
     private final String footer;
     private final String prefix;
@@ -23,7 +24,7 @@ public class TabData {
         footer = node.getNode("footer").getString();
         prefix = node.getNode("prefix").getString();
         suffix = node.getNode("suffix").getString();
-        this.delay = node.getNode("delay").getInt(defDelay);
+        this.delay = new RandomDelay(node.getNode("delay").getString(defDelay + ""));
     }
 
     public void setTab(Player p) {
