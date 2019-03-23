@@ -157,6 +157,7 @@ public class YysScoreBoardCommand {
                             }
                         }
                         src.sendMessage(Util.toText(LanguageManager.getString("yysscoreboard.command.use.successful")));
+                        user.getPlayer().ifPresent(player -> TaskManager.update(player, pc));
                         return CommandResult.success();
                     } catch (IOException e) {
                         src.sendMessage(Util.toText(LanguageManager.getString("yysscoreboard.command.use.exception")));
