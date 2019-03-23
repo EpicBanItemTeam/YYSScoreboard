@@ -59,7 +59,6 @@ public class ObjectiveData {
                     .build();
         }
         objective.setDisplayName(textManager.toText(title, p));
-        YysScoreBoard.logger.warn("I don't know why NPE, title:" + title + ", player:" + p);
         Map<Text, Score> map = objective.getScores();
         if (hasSameScore) {
             map.values().forEach(objective::removeScore);
