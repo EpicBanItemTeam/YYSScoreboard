@@ -81,10 +81,16 @@ public class TaskManager {
                 return;
             }
         }
-        Pair<String, String> pair = usingCache.getOrDefault(p.getUniqueId(), new Pair<>());
-        pair.immutable = !pc.isToggle();
-        pair.first = pc.getDisplayObjectiveID();
-        pair.second = pc.getDisplayTabID();
+        Pair<String, String> pair = usingCache.get(p.getUniqueId());
+        if (pair == null) {
+            pair = new Pair<>(pc.getDisplayObjectiveID(), pc.getDisplayTabID());
+            pair.immutable = !pc.isToggle();
+            usingCache.put(p.getUniqueId(), pair);
+        } else {
+            pair.immutable = !pc.isToggle();
+            pair.first = pc.getDisplayObjectiveID();
+            pair.second = pc.getDisplayTabID();
+        }
         setupPlayer(p);
     }
 }
