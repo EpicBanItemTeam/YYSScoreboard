@@ -214,7 +214,7 @@ public final class ScoreBoardConfig {
                 return;
             }
 
-            cfg = loader.createEmptyNode();
+            cfg = loader.createEmptyNode(ConfigurationOptions.defaults().setShouldCopyDefaults(true));
             setExample();
         }
     }
