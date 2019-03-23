@@ -1,4 +1,4 @@
-package com.github.euonmyoji.yysscoreboard.util;
+package com.github.euonmyoji.yysscoreboard.data;
 
 //为什么不用setter来检查确保维护性？  因为我也不知道 —— yyssb (点题)
 
@@ -7,15 +7,13 @@ package com.github.euonmyoji.yysscoreboard.util;
  *
  * @author yinyangshi
  */
-public class Pair<T, U> {
+public class DisplayIDData {
     public boolean immutable = false;
-    public volatile T first;
-    public volatile U second;
+    public volatile String first;
+    public volatile String second;
+    public boolean once = false;
 
-    public Pair() {
-    }
-
-    public Pair(T first, U second) {
+    public DisplayIDData(String first, String second) {
         this.first = first;
         this.second = second;
     }

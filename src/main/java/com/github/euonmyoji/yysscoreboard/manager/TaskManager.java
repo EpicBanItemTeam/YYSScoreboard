@@ -6,7 +6,7 @@ import com.github.euonmyoji.yysscoreboard.task.DisplayNumber;
 import com.github.euonmyoji.yysscoreboard.task.DisplayObjective;
 import com.github.euonmyoji.yysscoreboard.task.DisplayTab;
 import com.github.euonmyoji.yysscoreboard.task.IDisplayTask;
-import com.github.euonmyoji.yysscoreboard.util.Pair;
+import com.github.euonmyoji.yysscoreboard.data.DisplayIDData;
 import com.github.euonmyoji.yysscoreboard.util.Util;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -19,7 +19,7 @@ import java.util.UUID;
  * @author yinyangshi
  */
 public class TaskManager {
-    public static HashMap<UUID, Pair<String, String>> usingCache = new HashMap<>();
+    public static HashMap<UUID, DisplayIDData> usingCache = new HashMap<>();
     public static HashMap<String, DisplayObjective> objectives = new HashMap<>();
     public static HashMap<String, DisplayTab> tabs = new HashMap<>();
     private static DisplayNumber displayNumber;
@@ -49,7 +49,7 @@ public class TaskManager {
     }
 
     public static void setupPlayer(Player p) {
-        Pair<String, String> pair = usingCache.get(p.getUniqueId());
+        DisplayIDData pair = usingCache.get(p.getUniqueId());
         usingCache.put(p.getUniqueId(), pair);
         IDisplayTask task = objectives.get(pair.first);
         if (task != null) {
@@ -81,9 +81,9 @@ public class TaskManager {
                 return;
             }
         }
-        Pair<String, String> pair = usingCache.get(p.getUniqueId());
+        DisplayIDData pair = usingCache.get(p.getUniqueId());
         if (pair == null) {
-            pair = new Pair<>(pc.getDisplayObjectiveID(), pc.getDisplayTabID());
+            pair = new DisplayIDData(pc.getDisplayObjectiveID(), pc.getDisplayTabID());
             pair.immutable = !pc.isToggle();
             usingCache.put(p.getUniqueId(), pair);
         } else {

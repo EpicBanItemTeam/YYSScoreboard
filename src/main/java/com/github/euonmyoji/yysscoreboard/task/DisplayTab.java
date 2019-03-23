@@ -4,7 +4,7 @@ import com.github.euonmyoji.yysscoreboard.YysScoreBoard;
 import com.github.euonmyoji.yysscoreboard.configuration.PluginConfig;
 import com.github.euonmyoji.yysscoreboard.data.TabData;
 import com.github.euonmyoji.yysscoreboard.manager.TaskManager;
-import com.github.euonmyoji.yysscoreboard.util.Pair;
+import com.github.euonmyoji.yysscoreboard.data.DisplayIDData;
 import com.github.euonmyoji.yysscoreboard.util.RandomID;
 import com.github.euonmyoji.yysscoreboard.util.Util;
 import org.spongepowered.api.Sponge;
@@ -41,16 +41,21 @@ public class DisplayTab implements IDisplayTask {
                 builder.delayTicks(data.get(index).delay.getDelay());
                 Util.getStream(Sponge.getServer().getOnlinePlayers())
                         .filter(p -> {
-                            Pair<String, String> pair = TaskManager.usingCache.get(p.getUniqueId());
+                            DisplayIDData pair = TaskManager.usingCache.get(p.getUniqueId());
                             return pair != null && id.equals(TaskManager.usingCache.get(p.getUniqueId()).first);
                         })
                         .forEach(cur::setTab);
                 if (++index >= data.size()) {
                     index = 0;
                     if (randomID != null) {
-                        for (Pair<String, String> value : TaskManager.usingCache.values()) {
+                        for (DisplayIDData value : TaskManager.usingCache.values()) {
                             if (id.equals(value.second) && !value.immutable) {
-                                value.second = randomID.getID();
+                                if (value.once) {
+                                    value.second = randomID.getID();
+                                    value.once = false;
+                                } else {
+                                    value.once = true;
+                                }
                             }
                         }
                     }

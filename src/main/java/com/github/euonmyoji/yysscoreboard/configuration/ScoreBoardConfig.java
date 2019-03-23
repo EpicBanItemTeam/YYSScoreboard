@@ -81,8 +81,8 @@ public final class ScoreBoardConfig {
                 }
             });
             RandomID randomID = null;
-            if (!cfg.getNode(settingsKey).isVirtual()) {
-                randomID = new RandomID(cfg.getNode(settingsKey, "next").getString());
+            if (!task.getNode(settingsKey).isVirtual()) {
+                randomID = new RandomID(task.getNode(settingsKey, "next").getString());
             }
             TaskManager.registerTask(id, new DisplayObjective(id, scoreBoardData, randomID));
         });
@@ -95,8 +95,8 @@ public final class ScoreBoardConfig {
                 }
             });
             RandomID randomID = null;
-            if (!cfg.getNode(settingsKey).isVirtual()) {
-                randomID = new RandomID(cfg.getNode(settingsKey, "next").getString());
+            if (!task.getNode(settingsKey).isVirtual()) {
+                randomID = new RandomID(task.getNode(settingsKey, "next").getString());
             }
             TaskManager.registerTask(id, new DisplayTab(id, tabData, randomID));
         });
