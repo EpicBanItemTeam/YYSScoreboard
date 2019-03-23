@@ -65,7 +65,9 @@ public class ObjectiveData {
             objective.setDisplayName(textManager.toText(title, p));
             Map<Text, Score> map = objective.getScores();
             if (hasSameScore) {
-                map.values().forEach(objective::removeScore);
+                for (Score value : map.values()) {
+                    objective.removeScore(value);
+                }
             } else {
                 for (Score value : map.values()) {
                     if (lines.stream().allMatch(data -> data.score != value.getScore())) {
@@ -91,8 +93,12 @@ public class ObjectiveData {
                     });
                     Score score = objective.getOrCreateScore(text);
                     score.setScore(data.score);
-                    keys.forEach(map::remove);
-                    cache.forEach(objective::removeScore);
+                    for (Text key : keys) {
+                        map.remove(key);
+                    }
+                    for (Score value : cache) {
+                        objective.removeScore(value);
+                    }
                 }
             }
         }
