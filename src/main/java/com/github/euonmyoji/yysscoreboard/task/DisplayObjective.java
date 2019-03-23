@@ -113,6 +113,7 @@ public class DisplayObjective implements IDisplayTask {
                     cur.setObjective(optObjective.get(), p);
                 } else {
                     Objective objective = cur.setObjective(null, p);
+                    sb.addObjective(objective);
                     sb.updateDisplaySlot(objective, DisplaySlots.SIDEBAR);
                 }
             }
