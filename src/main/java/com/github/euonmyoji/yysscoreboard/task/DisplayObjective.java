@@ -51,7 +51,7 @@ public class DisplayObjective implements IDisplayTask {
                     ObjectiveData curData = data.get(index);
                     Util.getStream(Sponge.getServer().getOnlinePlayers())
                             .filter(p -> !GlobalPlayerConfig.list.contains(p.getUniqueId())
-                                    && TaskManager.usingCache.get(p.getUniqueId()).first.equals(id))
+                                    && id.equals(TaskManager.usingCache.get(p.getUniqueId()).first))
                             .map(player -> {
                                 Scoreboard sb = player.getScoreboard();
                                 Objective objective = sb.getObjective(OBJECTIVE_NAME).orElse(null);
