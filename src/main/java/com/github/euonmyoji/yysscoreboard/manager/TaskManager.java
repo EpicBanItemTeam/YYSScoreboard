@@ -20,8 +20,8 @@ import java.util.UUID;
  */
 public class TaskManager {
     public static HashMap<UUID, Pair<String, String>> usingCache = new HashMap<>();
-    private static HashMap<String, DisplayObjective> objectives = new HashMap<>();
-    private static HashMap<String, DisplayTab> tabs = new HashMap<>();
+    public static HashMap<String, DisplayObjective> objectives = new HashMap<>();
+    public static HashMap<String, DisplayTab> tabs = new HashMap<>();
     private static DisplayNumber displayNumber;
 
     public static void registerTask(String id, DisplayObjective objective) {
@@ -81,10 +81,10 @@ public class TaskManager {
                 return;
             }
         }
-        Pair<String, String> pair = usingCache.get(p.getUniqueId());
+        Pair<String, String> pair = usingCache.getOrDefault(p.getUniqueId(), new Pair<>());
         pair.immutable = !pc.isToggle();
         pair.first = pc.getDisplayObjectiveID();
         pair.second = pc.getDisplayTabID();
-
+        setupPlayer(p);
     }
 }

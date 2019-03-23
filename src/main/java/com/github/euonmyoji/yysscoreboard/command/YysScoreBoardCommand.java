@@ -140,12 +140,21 @@ public class YysScoreBoardCommand {
                         if (!tab && !sb) {
                             pc.setDisplayObjectiveID(id);
                             pc.setDisplayTabID(id);
+                        } else {
+                            if (tab && TaskManager.tabs.containsKey(id)) {
+                                pc.setDisplayTabID(id);
+                            }
+                            if (sb && TaskManager.objectives.containsKey(id)) {
+                                pc.setDisplayObjectiveID(id);
+                            }
                         }
-                        if (tab) {
-                            pc.setDisplayTabID(id);
-                        }
-                        if (sb) {
-                            pc.setDisplayObjectiveID(id);
+                        if (GlobalPlayerConfig.list.remove(user.getUniqueId())) {
+                            try {
+                                GlobalPlayerConfig.saveList();
+                            } catch (ObjectMappingException e) {
+                                YysScoreBoard.logger.warn("wtf", e);
+
+                            }
                         }
                         src.sendMessage(Util.toText(LanguageManager.getString("yysscoreboard.command.use.successful")));
                         return CommandResult.success();

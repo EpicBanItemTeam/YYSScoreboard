@@ -1,5 +1,6 @@
 package com.github.euonmyoji.yysscoreboard.configuration;
 
+import com.github.euonmyoji.yysscoreboard.YysScoreBoard;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 
@@ -22,7 +23,11 @@ public class LocalHoconPlayerConfig implements PlayerConfig {
 
     @Override
     public void init() {
-
+        try {
+            check();
+        } catch (IOException e) {
+            YysScoreBoard.logger.warn("ioe", e);
+        }
     }
 
     @Override

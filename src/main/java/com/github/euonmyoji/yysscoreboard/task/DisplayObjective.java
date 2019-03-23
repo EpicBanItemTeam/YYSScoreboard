@@ -69,7 +69,7 @@ public class DisplayObjective implements IDisplayTask {
                 } else {
                     Util.getStream(Sponge.getServer().getOnlinePlayers())
                             .filter(p -> !GlobalPlayerConfig.list.contains(p.getUniqueId())
-                                    && TaskManager.usingCache.get(p.getUniqueId()).first.equals(id))
+                                    && id.equals(TaskManager.usingCache.get(p.getUniqueId()).first))
                             .forEach(this::setupPlayer);
                 }
 
