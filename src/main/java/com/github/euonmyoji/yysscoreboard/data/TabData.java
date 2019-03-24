@@ -48,8 +48,7 @@ public class TabData {
                     .getTabList().getEntry(p.getUniqueId()).ifPresent(entry -> {
                         if (p == player) {
                             entry.setDisplayName(prefix.toBuilder()
-                                    .append(Util.toText(PluginConfig.getSelfNamePrefix()))
-                                    .append(p.getDisplayNameData().displayName().get())
+                                    .append(Util.toText(PluginConfig.getSelfNamePrefix() + p.getName()))
                                     .append(suffix)
                                     .build());
                         } else {

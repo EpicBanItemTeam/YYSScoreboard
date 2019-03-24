@@ -30,7 +30,6 @@ public class DisplayTab implements IDisplayTask {
         running = !data.isEmpty();
         cur = running ? data.get(0) : null;
         this.randomID = randomID;
-
     }
 
     @Override
