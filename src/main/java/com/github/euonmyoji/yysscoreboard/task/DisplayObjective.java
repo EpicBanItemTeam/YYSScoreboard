@@ -32,6 +32,7 @@ public class DisplayObjective implements IDisplayTask {
     private final RandomID randomID;
     private int index = 0;
     private ObjectiveData cur;
+    private int errors = 0;
     private volatile boolean running;
 
     public DisplayObjective(String id, List<ObjectiveData> data, RandomID randomID) {
@@ -57,7 +58,6 @@ public class DisplayObjective implements IDisplayTask {
                             return false;
                         });
                 if (PluginConfig.isStaticMode) {
-                    ObjectiveData curData = data.get(index);
                     stream.map(player -> {
                         Scoreboard sb = player.getScoreboard();
                         Objective objective = sb.getObjective(OBJECTIVE_NAME).orElse(null);
@@ -71,7 +71,7 @@ public class DisplayObjective implements IDisplayTask {
                     })
                             .distinct()
                             .filter(Objects::nonNull)
-                            .forEach(objective -> curData.setObjective(objective, null));
+                            .forEach(objective -> cur.setObjective(objective, null));
                 } else {
                     stream.forEach(this::setupPlayer);
                 }
@@ -79,7 +79,7 @@ public class DisplayObjective implements IDisplayTask {
                 if (PluginConfig.asyncSidebar) {
                     builder.async();
                 }
-                builder.delayTicks(data.get(index).delay.getDelay());
+                builder.delayTicks(cur.delay.getDelay());
                 if (++index >= data.size()) {
                     index = 0;
                     if (randomID != null) {
@@ -95,8 +95,13 @@ public class DisplayObjective implements IDisplayTask {
                         }
                     }
                 }
+                errors = 0;
             } catch (Throwable e) {
-                YysScoreBoard.logger.warn("something wrong", e);
+                YysScoreBoard.logger.warn("something wrong while displaying objective", e);
+                if (++errors > 1) {
+                    YysScoreBoard.logger.warn("error twice continually, canceling the task");
+                    cancel();
+                }
             }
             builder.submit(YysScoreBoard.plugin);
         }

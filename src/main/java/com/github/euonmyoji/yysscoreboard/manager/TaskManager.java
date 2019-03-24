@@ -2,12 +2,11 @@ package com.github.euonmyoji.yysscoreboard.manager;
 
 import com.github.euonmyoji.yysscoreboard.YysScoreBoard;
 import com.github.euonmyoji.yysscoreboard.configuration.PlayerConfig;
+import com.github.euonmyoji.yysscoreboard.data.DisplayIDData;
 import com.github.euonmyoji.yysscoreboard.task.DisplayNumber;
 import com.github.euonmyoji.yysscoreboard.task.DisplayObjective;
 import com.github.euonmyoji.yysscoreboard.task.DisplayTab;
 import com.github.euonmyoji.yysscoreboard.task.IDisplayTask;
-import com.github.euonmyoji.yysscoreboard.data.DisplayIDData;
-import com.github.euonmyoji.yysscoreboard.util.Util;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 
@@ -34,7 +33,7 @@ public class TaskManager {
     }
 
     public static void registerTask(String id, DisplayTab tab) {
-        IDisplayTask task = tabs.get(id);
+        IDisplayTask task = tabs.put(id, tab);
         if (task != null) {
             task.cancel();
         }
@@ -69,7 +68,7 @@ public class TaskManager {
     }
 
     public static void update() {
-        Util.getStream(Sponge.getServer().getOnlinePlayers()).forEach(player -> update(player, null));
+        Sponge.getServer().getOnlinePlayers().forEach(player -> update(player, null));
     }
 
     public static void update(Player p, PlayerConfig pc) {

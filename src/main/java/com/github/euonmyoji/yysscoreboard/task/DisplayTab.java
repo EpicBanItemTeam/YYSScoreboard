@@ -21,6 +21,7 @@ public class DisplayTab implements IDisplayTask {
     private final List<TabData> data;
     private final RandomID randomID;
     private int index = 0;
+    private int errors = 0;
     private TabData cur;
     private volatile boolean running;
 
@@ -37,7 +38,8 @@ public class DisplayTab implements IDisplayTask {
         if (running) {
             Task.Builder builder = Task.builder().execute(this);
             try {
-                builder.delayTicks(data.get(index).delay.getDelay());
+                cur = data.get(index);
+                builder.delayTicks(cur.delay.getDelay());
                 Util.getStream(Sponge.getServer().getOnlinePlayers())
                         .filter(p -> {
                             DisplayIDData pair = TaskManager.usingCache.get(p.getUniqueId());
@@ -62,8 +64,13 @@ public class DisplayTab implements IDisplayTask {
                 if (PluginConfig.asyncTab) {
                     builder.async();
                 }
+                errors = 0;
             } catch (Throwable e) {
-                YysScoreBoard.logger.warn("something wrong", e);
+                YysScoreBoard.logger.warn("something wrong while displaying tab", e);
+                if (++errors > 1) {
+                    YysScoreBoard.logger.warn("error twice continually, canceling the task");
+                    cancel();
+                }
             }
             builder.submit(YysScoreBoard.plugin);
         }
