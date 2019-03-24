@@ -2,9 +2,9 @@ package com.github.euonmyoji.yysscoreboard.task;
 
 import com.github.euonmyoji.yysscoreboard.YysScoreBoard;
 import com.github.euonmyoji.yysscoreboard.configuration.PluginConfig;
+import com.github.euonmyoji.yysscoreboard.data.DisplayIDData;
 import com.github.euonmyoji.yysscoreboard.data.TabData;
 import com.github.euonmyoji.yysscoreboard.manager.TaskManager;
-import com.github.euonmyoji.yysscoreboard.data.DisplayIDData;
 import com.github.euonmyoji.yysscoreboard.util.RandomID;
 import com.github.euonmyoji.yysscoreboard.util.Util;
 import org.spongepowered.api.Sponge;

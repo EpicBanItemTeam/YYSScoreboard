@@ -84,13 +84,13 @@ public class TaskManager {
         DisplayIDData pair = usingCache.get(p.getUniqueId());
         if (pair == null) {
             pair = new DisplayIDData(pc.getDisplayObjectiveID(), pc.getDisplayTabID());
-            pair.immutable = !pc.isToggle();
             usingCache.put(p.getUniqueId(), pair);
         } else {
-            pair.immutable = !pc.isToggle();
             pair.first = pc.getDisplayObjectiveID();
             pair.second = pc.getDisplayTabID();
         }
+        pair.immutable = !pc.isToggle();
+        pair.once = false;
         setupPlayer(p);
     }
 }

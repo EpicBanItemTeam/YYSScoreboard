@@ -88,6 +88,7 @@ public final class PluginConfig {
         }
 
         ////////////extra///////////
+        cfg.getNode("extra", "self-name-prefix").getString("");
         goalCount = cfg.getNode("extra", "parallelGoal").getInt(9);
         String showNumber = cfg.getNode("extra", "showNumber").getString("");
         if (!Strings.isNullOrEmpty(showNumber)) {
@@ -109,6 +110,10 @@ public final class PluginConfig {
             }
             TaskManager.registerTask(task);
         }
+    }
+
+    public static String getSelfNamePrefix() {
+        return cfg.getNode("extra", "self-name-prefix").getString("");
     }
 
     private static void save() {

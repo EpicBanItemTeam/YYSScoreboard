@@ -1,6 +1,8 @@
 package com.github.euonmyoji.yysscoreboard.data;
 
+import com.github.euonmyoji.yysscoreboard.configuration.PluginConfig;
 import com.github.euonmyoji.yysscoreboard.util.RandomDelay;
+import com.github.euonmyoji.yysscoreboard.util.Util;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -36,13 +38,24 @@ public class TabData {
             tabList.setFooter(textManager.toText(footer, p));
         }
         if (prefix != null || suffix != null) {
-            Text displayName = textManager.toText(prefix, p).toBuilder()
+            Text prefix = textManager.toText(this.prefix, p);
+            Text suffix = textManager.toText(this.suffix, p);
+            Text displayName = prefix.toBuilder()
                     .append(p.getDisplayNameData().displayName().get())
-                    .append(textManager.toText(suffix, p))
+                    .append(suffix)
                     .build();
-
             Sponge.getServer().getOnlinePlayers().forEach(player -> player
-                    .getTabList().getEntry(p.getUniqueId()).ifPresent(entry -> entry.setDisplayName(displayName)));
+                    .getTabList().getEntry(p.getUniqueId()).ifPresent(entry -> {
+                        if (p == player) {
+                            entry.setDisplayName(prefix.toBuilder()
+                                    .append(Util.toText(PluginConfig.getSelfNamePrefix()))
+                                    .append(p.getDisplayNameData().displayName().get())
+                                    .append(suffix)
+                                    .build());
+                        } else {
+                            entry.setDisplayName(displayName);
+                        }
+                    }));
         }
     }
 }
