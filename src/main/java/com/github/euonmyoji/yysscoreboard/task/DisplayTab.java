@@ -20,7 +20,6 @@ public class DisplayTab implements IDisplayTask {
     private final String id;
     private final List<TabData> data;
     private final RandomID randomID;
-    private final Object lock = new Object();
     private int index = 0;
     private int errors = 0;
     private TabData cur;
@@ -41,14 +40,12 @@ public class DisplayTab implements IDisplayTask {
             try {
                 cur = data.get(index);
                 builder.delayTicks(cur.delay.getDelay());
-                synchronized (lock) {
-                    Util.getStream(Sponge.getServer().getOnlinePlayers())
-                            .filter(p -> {
-                                DisplayIDData pair = TaskManager.usingCache.get(p.getUniqueId());
-                                return pair != null && id.equals(TaskManager.usingCache.get(p.getUniqueId()).first);
-                            })
-                            .forEach(cur::setTab);
-                }
+                Util.getStream(Sponge.getServer().getOnlinePlayers())
+                        .filter(p -> {
+                            DisplayIDData pair = TaskManager.usingCache.get(p.getUniqueId());
+                            return pair != null && id.equals(TaskManager.usingCache.get(p.getUniqueId()).first);
+                        })
+                        .forEach(cur::setTab);
                 if (++index >= data.size()) {
                     index = 0;
                     if (randomID != null) {
