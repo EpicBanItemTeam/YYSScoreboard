@@ -23,6 +23,7 @@ public class DisplayNumber implements Runnable {
     public static final String PING_OBJECTIVE_NAME = "yyssbPing";
     private static Objective pingObjective;
     private final NumberSupplier supplier;
+
     private volatile boolean running = true;
 
     public DisplayNumber(NumberSupplier supplier) {

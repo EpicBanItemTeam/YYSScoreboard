@@ -48,7 +48,7 @@ public class YysScoreBoard {
     public static Logger logger;
     public static YysScoreBoard plugin;
     private boolean enabledPlaceHolderAPI = false;
-    private Metrics2 metrics;
+    private final Metrics2 metrics;
 
     @Inject
     public YysScoreBoard(@ConfigDir(sharedRoot = false) Path cfgDir, Logger logger, Metrics2 metrics) {

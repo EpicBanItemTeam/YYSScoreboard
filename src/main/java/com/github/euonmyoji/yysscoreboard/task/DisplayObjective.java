@@ -35,6 +35,7 @@ public class DisplayObjective implements IDisplayTask {
     private int errors = 0;
     private volatile boolean running;
 
+
     public DisplayObjective(String id, List<ObjectiveData> data, RandomID randomID) {
         this.id = id;
         this.data = data;
