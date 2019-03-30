@@ -51,10 +51,13 @@ public final class PluginConfig {
     }
 
     public static void init() {
+        Path filePath = defaultCfgDir.resolve("config.conf");
         loader = HoconConfigurationLoader.builder()
-                .setPath(defaultCfgDir.resolve("config.conf")).build();
+                .setPath(filePath).build();
         reload();
-        setComment();
+        if (Files.notExists(filePath)) {
+            setComment();
+        }
         save();
     }
 
