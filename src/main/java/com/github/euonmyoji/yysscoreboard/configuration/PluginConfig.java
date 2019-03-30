@@ -38,9 +38,9 @@ public final class PluginConfig {
     public static boolean asyncTab = false;
     public static int goalCount = 9;
     public static boolean hasSameScore = false;
-    static Set<UUID> noClear = new HashSet<>();
     public static int updateTick = 20;
     public static boolean isStableMode = true;
+    static Set<UUID> noClear = new HashSet<>();
     static boolean cacheScoreboard = true;
     private static CommentedConfigurationNode cfg;
     private static CommentedConfigurationNode generalNode;
@@ -135,15 +135,15 @@ public final class PluginConfig {
 
     private static void setComment() {
         generalNode.getNode(UPDATE_TICK).setComment(generalNode.getNode(UPDATE_TICK).getComment()
-                .orElse("记分板刷新时间 默认为20tick"));
+                .orElse("The default tab&scoreboard delay|update tick"));
 
-        generalNode.getNode("scoreboard-mode").setComment("计分板模式选项(更好的配置" +
-                "\n·async-update: 是否异步刷新计分板" +
-                "\n·cache-scoreboard: 如果是插件自行创建计分板 是否会缓存在内存中" +
-                "\n·same-score: 是否允许计分板中文本有相同数字(如果不允许 那么闪烁可能轻微一点)" +
-                "\n·stable: 兼容模式(兼容newhonor) 可能会遇到神奇的bug(例如玩家变量错乱了)  #具体代码实现为 所有sb为玩家目前身上的sb" +
-                "\n·static: 计分板是否为静态(即全服统一sb 不分玩家) 如果为静态模式 请不要使用有关玩家的变量！！");
+        generalNode.getNode("scoreboard-mode").setComment("Plugin work mode" +
+                "\n·async-something: Do something async (not in main thread)" +
+                "\n·cache-scoreboard: Cache player's only scoreboard in a hash map" +
+                "\n·same-score: Scoreboard whether have same score or not" +
+                "\n·stable: GetScoreboard from player using instead of building new one" +
+                "\n·static: Player may use the same scoreboard and won't parse player placeholder");
 
-        cfg.getNode("extra", "parallelGoal").setComment("玩家数量大于等于多少时，并行处理数据");
+        cfg.getNode("extra", "parallelGoal").setComment("The size of something is bigger than this will parallel");
     }
 }
