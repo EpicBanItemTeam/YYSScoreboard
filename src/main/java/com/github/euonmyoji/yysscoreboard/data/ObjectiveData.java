@@ -69,9 +69,12 @@ public class ObjectiveData {
                     objective.removeScore(value);
                 }
             } else {
-                for (Score value : map.values()) {
-                    if (lines.stream().allMatch(data -> data.score != value.getScore())) {
-                        objective.removeScore(value);
+                Iterator<Map.Entry<Text, Score>> it = map.entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry<Text, Score> entry = it.next();
+                    if (lines.stream().allMatch(data -> data.score != entry.getValue().getScore())) {
+                        objective.removeScore(entry.getValue());
+                        it.remove();
                     }
                 }
             }

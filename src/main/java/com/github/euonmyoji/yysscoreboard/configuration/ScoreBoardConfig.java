@@ -76,7 +76,7 @@ public final class ScoreBoardConfig {
                         scoreBoardData.add(new ObjectiveData(o2, updateTick));
                     }
                 } catch (ObjectMappingException e) {
-                    YysScoreBoard.logger.warn("scoreboard config error! where:", o.toString());
+                    YysScoreBoard.logger.warn("scoreboard config error! where:" + o.toString());
                     YysScoreBoard.logger.warn("scoreboard config error!", e);
                 }
             });
