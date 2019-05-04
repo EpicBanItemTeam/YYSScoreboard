@@ -1,7 +1,7 @@
-yysscoreboard.command.on.successful=[YYSSB]开启scoreboard成功
-yysscoreboard.command.on.already=[YYSSB]你已经开启scoreboard了
-yysscoreboard.command.off.successful=[YYSSB]关闭scoreboard成功
-yysscoreboard.command.off.already=[YYSSB]你已经关闭scoreboard了
-yysscoreboard.command.use.successful=[YYSSB]成功切换显示的id
-yysscoreboard.command.use.noPermission=[YYSSB]你没有权限修改他人id
-yysscoreboard.command.use.exception=[YYSSB]更新配置文件出错
+yysscoreboard.command.on.successful=§f[§bYYSSB§f] §a开启计分板成功
+yysscoreboard.command.on.already=§f[§bYYSSB§f] §a你已经开启计分板了
+yysscoreboard.command.off.successful=§f[§bYYSSB§f] §6关闭计分板成功
+yysscoreboard.command.off.already=§f[§bYYSSB§f] §6你已经关闭计分板了
+yysscoreboard.command.use.successful=§f[§bYYSSB§f] §a成功切换显示的id
+yysscoreboard.command.use.noPermission=§f[§bYYSSB§f] §6你没有权限修改他人id
+yysscoreboard.command.use.exception=§f[§bYYSSB§f] §c更新配置文件出错

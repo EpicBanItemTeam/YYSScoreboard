@@ -89,7 +89,7 @@ public class YysScoreBoard {
             //do not spam the server (ignore)
             metrics.cancel();
             Task.builder().delayTicks(60 * 20).execute(metrics::cancel).submit(this);
-            logger.info("NoMetricsManagerClassDefFound, try canceling the metrics");
+            logger.debug("NoMetricsManagerClassDefFound, try canceling the metrics");
         }
     }
 
