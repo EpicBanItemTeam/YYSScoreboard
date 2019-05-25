@@ -69,7 +69,8 @@ public class LocalHoconPlayerConfig implements PlayerConfig {
         return this.uuid;
     }
 
-    private void save() throws IOException {
+    @Override
+    public void save() throws IOException {
         loader.save(cfg);
     }
 }

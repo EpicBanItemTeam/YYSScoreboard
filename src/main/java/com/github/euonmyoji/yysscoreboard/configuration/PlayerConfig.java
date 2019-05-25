@@ -91,4 +91,11 @@ public interface PlayerConfig {
             setDisplayTabID(TaskManager.tabs.containsKey("main") ? "main" : TaskManager.tabs.keySet().stream().findAny().orElse(""));
         }
     }
+
+    /**
+     * 保存玩家数据
+     *
+     * @throws Exception if something happened
+     */
+    void save() throws Exception;
 }

@@ -104,6 +104,11 @@ public class YysScoreBoardCommand {
                             }
                         } else {
                             src.sendMessage(Util.toText(LanguageManager.getString("yysscoreboard.command.on.already")));
+                            try {
+                                PlayerConfig pc = PlayerConfig.of(uuid);
+                                pc.check();
+                            } catch (Exception ignore) {
+                            }
                             TaskManager.setupPlayer(((Player) src));
                         }
                     };
