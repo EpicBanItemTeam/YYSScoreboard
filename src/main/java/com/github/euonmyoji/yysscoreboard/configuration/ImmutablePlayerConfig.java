@@ -62,4 +62,9 @@ public class ImmutablePlayerConfig implements PlayerConfig {
     public UUID getUUID() {
         return this.uuid;
     }
+
+    @Override
+    public void save() throws Exception {
+        throw new UnsupportedOperationException();
+    }
 }
