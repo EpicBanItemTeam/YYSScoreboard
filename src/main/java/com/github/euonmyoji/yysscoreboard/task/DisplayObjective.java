@@ -20,7 +20,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static com.github.euonmyoji.yysscoreboard.configuration.ScoreBoardConfig.OBJECTIVE_NAME;
+import static com.github.euonmyoji.yysscoreboard.configuration.ScoreBoardConfig.getObjectiveName;
 import static com.github.euonmyoji.yysscoreboard.configuration.ScoreBoardConfig.getPlayerScoreboard;
 
 /**
@@ -60,7 +60,7 @@ public class DisplayObjective implements IDisplayTask {
                 if (PluginConfig.isStaticMode) {
                     stream.map(player -> {
                         Scoreboard sb = player.getScoreboard();
-                        Objective objective = sb.getObjective(OBJECTIVE_NAME).orElse(null);
+                        Objective objective = sb.getObjective(getObjectiveName(player)).orElse(null);
                         if (objective == null) {
                             objective = cur.setObjective(null, player);
                             sb.addObjective(objective);
@@ -118,7 +118,7 @@ public class DisplayObjective implements IDisplayTask {
                     p.setScoreboard(sb);
                 }
 
-                Optional<Objective> optObjective = sb.getObjective(OBJECTIVE_NAME);
+                Optional<Objective> optObjective = sb.getObjective(getObjectiveName(p));
                 if (optObjective.isPresent()) {
                     cur.setObjective(optObjective.get(), p);
                 } else {

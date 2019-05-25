@@ -32,7 +32,7 @@ import static com.github.euonmyoji.yysscoreboard.configuration.PluginConfig.*;
  * @author yinyangshi
  */
 public final class ScoreBoardConfig {
-    public static final String OBJECTIVE_NAME = "yyssbObjective";
+    public static final String OBJECTIVE_PREFIX = "ySb";
     private static final int CONFIG_VERSION = 1;
     private static final String VERSION_KEY = "version";
     private static Path cfgPath;
@@ -48,6 +48,20 @@ public final class ScoreBoardConfig {
     public static void init() {
         reload();
         LanguageManager.init();
+    }
+
+    public static String getObjectiveName(Player p) {
+        if (isStaticMode) {
+            return OBJECTIVE_PREFIX;
+        } else {
+            String n = OBJECTIVE_PREFIX + p.getName();
+            int maxChar = 16;
+            if(n.length() > maxChar) {
+                return n.substring(0, 16);
+            } else {
+                return n;
+            }
+        }
     }
 
     public static void reload() {

@@ -41,7 +41,7 @@ public class YysScoreBoardCommand {
                             if (PluginConfig.isStaticMode || PluginConfig.isStableMode) {
                                 ((Player) src).setScoreboard(Scoreboard.builder().build());
                             } else {
-                                sb.getObjective(ScoreBoardConfig.OBJECTIVE_NAME).ifPresent(sb::removeObjective);
+                                sb.getObjective(ScoreBoardConfig.getObjectiveName(((Player) src))).ifPresent(sb::removeObjective);
                             }
                         } else {
                             GlobalPlayerConfig.list.add(uuid);
@@ -49,7 +49,7 @@ public class YysScoreBoardCommand {
                             if (PluginConfig.isStaticMode || PluginConfig.isStableMode) {
                                 ((Player) src).setScoreboard(Scoreboard.builder().build());
                             } else {
-                                sb.getObjective(ScoreBoardConfig.OBJECTIVE_NAME).ifPresent(sb::removeObjective);
+                                sb.getObjective(ScoreBoardConfig.getObjectiveName(((Player) src))).ifPresent(sb::removeObjective);
                             }
 
                             try {

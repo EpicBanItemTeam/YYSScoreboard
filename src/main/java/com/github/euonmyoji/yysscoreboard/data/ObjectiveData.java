@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 import static com.github.euonmyoji.yysscoreboard.YysScoreBoard.textManager;
 import static com.github.euonmyoji.yysscoreboard.configuration.PluginConfig.hasSameScore;
-import static com.github.euonmyoji.yysscoreboard.configuration.ScoreBoardConfig.OBJECTIVE_NAME;
+import static com.github.euonmyoji.yysscoreboard.configuration.ScoreBoardConfig.getObjectiveName;
 
 /**
  * @author yinyangshi
@@ -58,7 +58,7 @@ public class ObjectiveData {
             if (objective == null) {
                 objective = Objective.builder()
                         .objectiveDisplayMode(ObjectiveDisplayModes.INTEGER)
-                        .name(OBJECTIVE_NAME)
+                        .name(getObjectiveName(p))
                         .criterion(Criteria.DUMMY)
                         .build();
             }

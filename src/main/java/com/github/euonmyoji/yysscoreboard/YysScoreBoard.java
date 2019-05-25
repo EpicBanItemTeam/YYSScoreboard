@@ -26,7 +26,6 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.scheduler.Task;
-import org.spongepowered.api.scoreboard.Scoreboard;
 import org.spongepowered.api.text.Text;
 
 import java.io.IOException;
@@ -47,8 +46,8 @@ public class YysScoreBoard {
     public static TextManager textManager;
     public static Logger logger;
     public static YysScoreBoard plugin;
-    private boolean enabledPlaceHolderAPI = false;
     private final Metrics2 metrics;
+    private boolean enabledPlaceHolderAPI = false;
 
     @Inject
     public YysScoreBoard(@ConfigDir(sharedRoot = false) Path cfgDir, Logger logger, Metrics2 metrics) {
@@ -109,18 +108,15 @@ public class YysScoreBoard {
 
     @Listener
     public void onStopping(GameStoppingServerEvent event) {
-        ScoreBoardConfig.getStaticScoreBoard().getObjective(ScoreBoardConfig.OBJECTIVE_NAME)
-                .ifPresent(objective -> {
-                    Scoreboard sb = ScoreBoardConfig.getStaticScoreBoard();
-                    sb.removeObjective(objective);
-                    sb.getObjective(DisplayNumber.PING_OBJECTIVE_NAME).ifPresent(sb::removeObjective);
-
-                });
+        ScoreBoardConfig.getStaticScoreBoard().getObjectives().stream()
+                .filter(objective -> objective.getName().startsWith(ScoreBoardConfig.OBJECTIVE_PREFIX))
+                .forEach(objective -> ScoreBoardConfig.getStaticScoreBoard().removeObjective(objective));
 
         Sponge.getServer().getOnlinePlayers().stream().map(Player::getScoreboard)
                 .forEach(scoreboard -> {
-                    scoreboard.getObjective(ScoreBoardConfig.OBJECTIVE_NAME)
-                            .ifPresent(scoreboard::removeObjective);
+                    scoreboard.getObjectives().stream()
+                            .filter(objective -> objective.getName().startsWith(ScoreBoardConfig.OBJECTIVE_PREFIX))
+                            .forEach(objective -> ScoreBoardConfig.getStaticScoreBoard().removeObjective(objective));
                     scoreboard.getObjective(DisplayNumber.PING_OBJECTIVE_NAME).ifPresent(scoreboard::removeObjective);
                 });
     }
