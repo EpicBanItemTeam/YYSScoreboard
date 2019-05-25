@@ -9,12 +9,12 @@ package com.github.euonmyoji.yysscoreboard.data;
  */
 public class DisplayIDData {
     public boolean immutable = false;
-    public volatile String first;
-    public volatile String second;
+    public volatile String objectiveID;
+    public volatile String tabID;
     public boolean once = false;
 
-    public DisplayIDData(String first, String second) {
-        this.first = first;
-        this.second = second;
+    public DisplayIDData(String first, String tabID) {
+        this.objectiveID = first;
+        this.tabID = tabID;
     }
 }

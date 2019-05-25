@@ -53,7 +53,7 @@ public class DisplayObjective implements IDisplayTask {
                         .filter(p -> {
                             if (!GlobalPlayerConfig.list.contains(p.getUniqueId())) {
                                 DisplayIDData pair = TaskManager.usingCache.get(p.getUniqueId());
-                                return pair != null && id.equals(TaskManager.usingCache.get(p.getUniqueId()).first);
+                                return pair != null && id.equals(TaskManager.usingCache.get(p.getUniqueId()).objectiveID);
                             }
                             return false;
                         });
@@ -84,9 +84,9 @@ public class DisplayObjective implements IDisplayTask {
                     index = 0;
                     if (randomID != null) {
                         for (DisplayIDData value : TaskManager.usingCache.values()) {
-                            if (value.first.equals(id) && !value.immutable) {
+                            if (value.objectiveID.equals(id) && !value.immutable) {
                                 if (value.once) {
-                                    value.first = randomID.getID();
+                                    value.objectiveID = randomID.getID();
                                     value.once = false;
                                 } else {
                                     value.once = true;

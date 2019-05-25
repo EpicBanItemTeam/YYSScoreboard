@@ -49,12 +49,11 @@ public class TaskManager {
 
     public static void setupPlayer(Player p) {
         DisplayIDData pair = usingCache.get(p.getUniqueId());
-        usingCache.put(p.getUniqueId(), pair);
-        IDisplayTask task = objectives.get(pair.first);
+        IDisplayTask task = objectives.get(pair.objectiveID);
         if (task != null) {
             task.setupPlayer(p);
         }
-        task = tabs.get(pair.second);
+        task = tabs.get(pair.tabID);
         if (task != null) {
             task.setupPlayer(p);
         }
@@ -85,8 +84,8 @@ public class TaskManager {
             pair = new DisplayIDData(pc.getDisplayObjectiveID(), pc.getDisplayTabID());
             usingCache.put(p.getUniqueId(), pair);
         } else {
-            pair.first = pc.getDisplayObjectiveID();
-            pair.second = pc.getDisplayTabID();
+            pair.objectiveID = pc.getDisplayObjectiveID();
+            pair.tabID = pc.getDisplayTabID();
         }
         pair.immutable = !pc.isToggle();
         pair.once = false;

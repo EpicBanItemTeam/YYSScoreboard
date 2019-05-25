@@ -43,16 +43,16 @@ public class DisplayTab implements IDisplayTask {
                 Util.getStream(Sponge.getServer().getOnlinePlayers())
                         .filter(p -> {
                             DisplayIDData pair = TaskManager.usingCache.get(p.getUniqueId());
-                            return pair != null && id.equals(TaskManager.usingCache.get(p.getUniqueId()).first);
+                            return pair != null && id.equals(TaskManager.usingCache.get(p.getUniqueId()).tabID);
                         })
                         .forEach(cur::setTab);
                 if (++index >= data.size()) {
                     index = 0;
                     if (randomID != null) {
                         for (DisplayIDData value : TaskManager.usingCache.values()) {
-                            if (id.equals(value.second) && !value.immutable) {
+                            if (id.equals(value.tabID) && !value.immutable) {
                                 if (value.once) {
-                                    value.second = randomID.getID();
+                                    value.tabID = randomID.getID();
                                     value.once = false;
                                 } else {
                                     value.once = true;
