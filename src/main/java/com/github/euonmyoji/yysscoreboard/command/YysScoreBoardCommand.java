@@ -38,16 +38,16 @@ public class YysScoreBoardCommand {
                         if (GlobalPlayerConfig.list.contains(uuid)) {
                             src.sendMessage(Util.toText(LanguageManager.getString("yysscoreboard.command.off.already")));
                             Scoreboard sb = ((Player) src).getScoreboard();
-                            if (PluginConfig.isStaticMode || PluginConfig.isStableMode) {
-                                ((Player) src).setScoreboard(Scoreboard.builder().build());
+                            if (PluginConfig.isStaticMode || !PluginConfig.isStableMode) {
+                                ((Player) src).setScoreboard(Sponge.getServer().getServerScoreboard().orElse(Scoreboard.builder().build()));
                             } else {
                                 sb.getObjective(ScoreBoardConfig.getObjectiveName(((Player) src))).ifPresent(sb::removeObjective);
                             }
                         } else {
                             GlobalPlayerConfig.list.add(uuid);
                             Scoreboard sb = ((Player) src).getScoreboard();
-                            if (PluginConfig.isStaticMode || PluginConfig.isStableMode) {
-                                ((Player) src).setScoreboard(Scoreboard.builder().build());
+                            if (PluginConfig.isStaticMode || !PluginConfig.isStableMode) {
+                                ((Player) src).setScoreboard(Sponge.getServer().getServerScoreboard().orElse(Scoreboard.builder().build()));
                             } else {
                                 sb.getObjective(ScoreBoardConfig.getObjectiveName(((Player) src))).ifPresent(sb::removeObjective);
                             }
