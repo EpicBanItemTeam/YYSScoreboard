@@ -26,6 +26,7 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.scoreboard.Scoreboard;
 import org.spongepowered.api.text.Text;
 
 import java.io.IOException;
@@ -47,7 +48,7 @@ public class YysScoreBoard {
     public static Logger logger;
     public static YysScoreBoard plugin;
     private final Metrics2 metrics;
-    private boolean enabledPlaceHolderAPI = false;
+    private boolean enabledPlaceHolderApi = false;
 
     @Inject
     public YysScoreBoard(@ConfigDir(sharedRoot = false) Path cfgDir, Logger logger, Metrics2 metrics) {
@@ -121,6 +122,16 @@ public class YysScoreBoard {
                 });
     }
 
+    @Listener
+    public void onPlayerQuit(ClientConnectionEvent.Disconnect event) {
+        Player p = event.getTargetEntity();
+        Scoreboard scoreboard = p.getScoreboard();
+        scoreboard.getObjectives().stream()
+                .filter(objective -> objective.getName().startsWith(ScoreBoardConfig.OBJECTIVE_PREFIX))
+                .forEach(objective -> ScoreBoardConfig.getStaticScoreBoard().removeObjective(objective));
+        scoreboard.getObjective(DisplayNumber.PING_OBJECTIVE_NAME).ifPresent(scoreboard::removeObjective);
+    }
+
 
     public void reload() {
         PluginConfig.reload();
@@ -134,10 +145,10 @@ public class YysScoreBoard {
 
         //hook PAPI
         if (Sponge.getPluginManager().getPlugin(PAPI_ID).isPresent()) {
-            if (!enabledPlaceHolderAPI) {
+            if (!enabledPlaceHolderApi) {
                 logger.info("hooked PAPI");
             }
-            enabledPlaceHolderAPI = true;
+            enabledPlaceHolderApi = true;
             textManager = PlaceHolderManager.getInstance();
 
         } else {
