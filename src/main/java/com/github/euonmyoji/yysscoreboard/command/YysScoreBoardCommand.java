@@ -72,6 +72,19 @@ public class YysScoreBoardCommand {
             })
             .build();
 
+    private static final CommandSpec CLEAR = CommandSpec.builder()
+            .description(Text.of("clear the goal player(s) scoreboard's all objectives"))
+            .permission("yysscoreboard.admin.command.clear")
+            .arguments(playerOrSource(Text.of("player")))
+            .executor((src, args) -> {
+                for (Player player : args.<Player>getAll("player")) {
+                    player.getScoreboard().getObjectives().forEach(objective -> player.getScoreboard().removeObjective(objective));
+                }
+                src.sendMessage(Text.of("[YYSSB]Cleared the scoreboard objectives"));
+                return CommandResult.success();
+            })
+            .build();
+
     private static final CommandSpec TOGGLE = CommandSpec.builder()
             .executor((src, args) -> {
                 if (src instanceof Player) {
@@ -196,5 +209,6 @@ public class YysScoreBoardCommand {
             .child(OFF, "off")
             .child(TOGGLE, "toggle")
             .child(USE, "use")
+            .child(CLEAR, "clear")
             .build();
 }
