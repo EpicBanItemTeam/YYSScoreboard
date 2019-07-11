@@ -113,6 +113,9 @@ public class YysScoreBoard {
                 .filter(objective -> objective.getName().startsWith(ScoreBoardConfig.OBJECTIVE_PREFIX))
                 .forEach(objective -> ScoreBoardConfig.getStaticScoreBoard().removeObjective(objective));
 
+        Sponge.getServer().getServerScoreboard().ifPresent(scoreboard -> scoreboard.getObjectives().stream()
+                .filter(objective -> objective.getName().startsWith(ScoreBoardConfig.OBJECTIVE_PREFIX))
+                .forEach(objective -> ScoreBoardConfig.getStaticScoreBoard().removeObjective(objective)));
         Sponge.getServer().getOnlinePlayers().stream().map(Player::getScoreboard)
                 .forEach(scoreboard -> {
                     scoreboard.getObjectives().stream()
