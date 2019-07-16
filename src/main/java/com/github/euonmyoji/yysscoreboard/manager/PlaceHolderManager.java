@@ -8,6 +8,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
 import javax.annotation.Nullable;
+import java.util.regex.Matcher;
 
 /**
  * @author yinyangshi
@@ -29,9 +30,35 @@ public class PlaceHolderManager implements TextManager {
         if (s == null) {
             return Text.EMPTY;
         }
-        s = Util.replaceTPS(s);
-        return PluginConfig.isStaticMode ? service.replacePlaceholders(Util.toText(s), null, null)
-                : service.replacePlaceholders(Util.toText(s), p, p);
+        Matcher matcher = PlaceholderService.DEFAULT_PATTERN.matcher(s);
+        if(matcher.find()) {
+            if(PluginConfig.isStaticMode) {
+                for (int i = 0; i < matcher.groupCount(); i++) {
+                    String v = matcher.group(i);
+                    Object o = service.parse(v, null,null);
+                    if(o != null) {
+                        if(o instanceof Number) {
+                            s = s.replace(v,String.format("%2f",((Number) o).doubleValue()));
+                        } else {
+                            s = s.replace(v, o.toString());
+                        }
+                    }
+                }
+            } else {
+                for (int i = 0; i < matcher.groupCount(); i++) {
+                    String v = matcher.group(i);
+                    Object o = service.parse(v, p,p);
+                    if(o != null) {
+                        if(o instanceof Number) {
+                            s = s.replace(v,String.format("%2f",((Number) o).doubleValue()));
+                        } else {
+                            s = s.replace(v, o.toString());
+                        }
+                    }
+                }
+            }
+        }
+        return Util.toText(s);
     }
 
     private PlaceHolderManager() {

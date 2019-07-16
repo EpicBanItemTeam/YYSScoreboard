@@ -17,14 +17,6 @@ public class Util {
         return TextSerializers.FORMATTING_CODE.deserialize(str);
     }
 
-    public static String replaceTPS(String s) {
-        final String tpsPlaceholder = "%server_tps%";
-        if (s.contains(tpsPlaceholder)) {
-            double tps = Sponge.getServer().getTicksPerSecond();
-            s = s.replace("%server_tps%", tps == 20.0 ? "20.0" : String.format("%.2f", tps));
-        }
-        return s;
-    }
 
     public static <T> Stream<T> getStream(Collection<T> list) {
         if (list.size() < PluginConfig.goalCount) {

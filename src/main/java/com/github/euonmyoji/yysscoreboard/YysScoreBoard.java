@@ -73,6 +73,15 @@ public class YysScoreBoard {
 
     @Listener
     public void onStarting(GameStartingServerEvent event) {
+        //code is copy and paste
+        //so there is no ifPresnet
+        Scoreboard scoreboard = Sponge.getServer().getServerScoreboard().orElse(null);
+        if (scoreboard != null) {
+            scoreboard.getObjectives().stream()
+                    .filter(objective -> objective.getName().startsWith(ScoreBoardConfig.OBJECTIVE_PREFIX))
+                    .forEach(objective -> ScoreBoardConfig.getStaticScoreBoard().removeObjective(objective));
+            scoreboard.getObjective(DisplayNumber.PING_OBJECTIVE_NAME).ifPresent(scoreboard::removeObjective);
+        }
         ScoreBoardConfig.init();
     }
 
@@ -105,7 +114,6 @@ public class YysScoreBoard {
             logger.warn("load failed", e);
         }
     }
-
 
     @Listener
     public void onStopping(GameStoppingServerEvent event) {
