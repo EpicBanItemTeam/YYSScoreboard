@@ -10,7 +10,6 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.TextTemplate;
 
 import javax.annotation.Nullable;
-import java.time.LocalDate;
 import java.time.temporal.TemporalAccessor;
 import java.util.Map;
 import java.util.stream.Collectors;
