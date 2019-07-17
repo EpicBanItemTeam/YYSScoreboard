@@ -47,7 +47,7 @@ public class PlaceHolderManager implements TextManager {
                     Object v = o.getValue();
                     if (v != null) {
                         if (v instanceof Number) {
-                            v = String.format("%2f", ((Number) v).doubleValue());
+                            v = String.format("%.2f", ((Number) v).doubleValue());
                         }
                     } else {
                         v = o.getKey();
