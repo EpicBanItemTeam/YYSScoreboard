@@ -10,9 +10,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.TextTemplate;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 /**
@@ -47,7 +45,11 @@ public class PlaceHolderManager implements TextManager {
                     Object v = o.getValue();
                     if (v != null) {
                         if (v instanceof Number) {
-                            v = String.format("%.2f", ((Number) v).doubleValue());
+                            long i = ((Number) v).longValue();
+                            double d = ((Number) v).doubleValue();
+                            if ((long) d != i) {
+                                v = String.format("%.2f", ((Number) v).doubleValue());
+                            }
                         }
                     } else {
                         v = o.getKey();
