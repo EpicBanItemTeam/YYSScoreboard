@@ -48,19 +48,19 @@ public class LocalHoconPlayerConfig implements PlayerConfig {
     }
 
     @Override
-    public boolean isToggle()  {
+    public void setDisplayTabID(String id) throws IOException {
+        cfg.getNode("use-id", "tab").setValue(id);
+        save();
+    }
+
+    @Override
+    public boolean isToggle() {
         return cfg.getNode("toggle").getBoolean(true);
     }
 
     @Override
     public void setToggle(boolean toggle) throws IOException {
         cfg.getNode("toggle").setValue(toggle);
-        save();
-    }
-
-    @Override
-    public void setDisplayTabID(String id) throws IOException {
-        cfg.getNode("use-id", "tab").setValue(id);
         save();
     }
 

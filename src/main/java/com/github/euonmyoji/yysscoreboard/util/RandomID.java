@@ -8,8 +8,8 @@ import java.util.Random;
  * @author yinyangshi
  */
 public class RandomID {
-    private String[] ids;
     private final Random r = new Random();
+    private String[] ids;
 
     public RandomID(String arg) {
         try {

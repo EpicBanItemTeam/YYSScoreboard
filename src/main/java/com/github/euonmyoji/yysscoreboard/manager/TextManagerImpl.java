@@ -11,23 +11,23 @@ import javax.annotation.Nullable;
  */
 public class TextManagerImpl implements TextManager {
 
-    @Override
-    public Text toText(String s, @Nullable Player p) {
-        if (s == null) {
-            return Text.EMPTY;
-        }
-        return Util.toText(s);
-    }
+    private static TextManagerImpl instance;
 
     private TextManagerImpl() {
     }
-
-    private static TextManagerImpl instance;
 
     public static TextManagerImpl getInstance() {
         if (instance == null) {
             instance = new TextManagerImpl();
         }
         return instance;
+    }
+
+    @Override
+    public Text toText(String s, @Nullable Player p) {
+        if (s == null) {
+            return Text.EMPTY;
+        }
+        return Util.toText(s);
     }
 }

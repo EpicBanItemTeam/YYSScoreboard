@@ -1,7 +1,6 @@
 package com.github.euonmyoji.yysscoreboard.util;
 
 import com.github.euonmyoji.yysscoreboard.configuration.PluginConfig;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 

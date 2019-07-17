@@ -25,12 +25,12 @@ public class DisplayTab implements IDisplayTask {
     private TabData cur;
     private volatile boolean running;
 
-    public DisplayTab(String id, List<TabData> data, RandomID randomID) {
+    public DisplayTab(String id, List<TabData> data, RandomID randomId) {
         this.id = id;
         this.data = data;
         running = !data.isEmpty();
         cur = running ? data.get(0) : null;
-        this.randomID = randomID;
+        this.randomID = randomId;
     }
 
     @Override

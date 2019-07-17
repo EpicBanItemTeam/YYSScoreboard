@@ -56,7 +56,7 @@ public final class ScoreBoardConfig {
         } else {
             String n = OBJECTIVE_PREFIX + p.getName();
             int maxChar = 16;
-            if(n.length() > maxChar) {
+            if (n.length() > maxChar) {
                 return n.substring(0, 16);
             } else {
                 return n;
