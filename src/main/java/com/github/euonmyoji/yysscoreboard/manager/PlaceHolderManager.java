@@ -3,13 +3,17 @@ package com.github.euonmyoji.yysscoreboard.manager;
 import com.github.euonmyoji.yysscoreboard.configuration.PluginConfig;
 import com.github.euonmyoji.yysscoreboard.util.Util;
 import me.rojo8399.placeholderapi.PlaceholderService;
+import me.rojo8399.placeholderapi.impl.utils.TextUtils;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.text.TextTemplate;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.Map;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 /**
  * @author yinyangshi
@@ -34,26 +38,22 @@ public class PlaceHolderManager implements TextManager {
         if (s == null) {
             return Text.EMPTY;
         }
-        Matcher matcher = PlaceholderService.DEFAULT_PATTERN.matcher(s);
         if (PluginConfig.isStableMode) {
             p = null;
         }
-        if (matcher.find()) {
-            for (int i = 0; i < matcher.groupCount(); i++) {
-                String v = matcher.group(i);
-                Object o = service.parse(v, p, p);
-                if (o != null) {
-                    if (o instanceof Number) {
-                        s = s.replace(v, String.format("%2f", ((Number) o).doubleValue()));
-                    } else if (o instanceof Text) {
-                        s = s.replace(v, TextSerializers.FORMATTING_CODE.serialize(((Text) o)));
+        TextTemplate textTemplate = TextUtils.toTemplate(Util.toText(s), PlaceholderService.DEFAULT_PATTERN);
+        Map<String, ?> map = service.fillPlaceholders(textTemplate, p, p).entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, o -> {
+                    Object v = o.getValue();
+                    if (v != null) {
+                        if (v instanceof Number) {
+                            v = String.format("%2f", ((Number) v).doubleValue());
+                        }
                     } else {
-                        s = s.replace(v, o.toString());
+                        v = o.getKey();
                     }
-                }
-            }
-        }
-
-        return Util.toText(s);
+                    return v;
+                }));
+        return textTemplate.apply(map).build();
     }
 }
