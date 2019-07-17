@@ -14,6 +14,7 @@ import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.scoreboard.Scoreboard;
 import org.spongepowered.api.scoreboard.displayslot.DisplaySlots;
 import org.spongepowered.api.scoreboard.objective.Objective;
+import sun.plugin2.main.server.Plugin;
 
 import java.util.List;
 import java.util.Objects;
@@ -114,7 +115,7 @@ public class DisplayObjective implements IDisplayTask {
             if (!GlobalPlayerConfig.list.contains(p.getUniqueId())) {
                 sb = getPlayerScoreboard(p);
 
-                if (sb != p.getScoreboard()) {
+                if (PluginConfig.forceUpdate || sb != p.getScoreboard()) {
                     p.setScoreboard(sb);
                 }
 
@@ -127,7 +128,7 @@ public class DisplayObjective implements IDisplayTask {
                 } else {
                     Objective objective = cur.setObjective(null, p);
                     sb.addObjective(objective);
-                    if (!sb.getObjective(DisplaySlots.SIDEBAR).isPresent()) {
+                    if (PluginConfig.forceUpdate  || !sb.getObjective(DisplaySlots.SIDEBAR).isPresent()) {
                         sb.updateDisplaySlot(objective, DisplaySlots.SIDEBAR);
                     }
                 }

@@ -10,6 +10,8 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.TextTemplate;
 
 import javax.annotation.Nullable;
+import java.time.LocalDate;
+import java.time.temporal.TemporalAccessor;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -50,6 +52,9 @@ public class PlaceHolderManager implements TextManager {
                             if ((double) i != d) {
                                 v = String.format("%.2f", ((Number) v).doubleValue());
                             }
+                        }
+                        if (v instanceof TemporalAccessor) {
+                            v = PluginConfig.timeFormatter.format(((TemporalAccessor) v));
                         }
                     } else {
                         v = o.getKey();

@@ -5,6 +5,7 @@ import com.github.euonmyoji.yysscoreboard.configuration.GlobalPlayerConfig;
 import com.github.euonmyoji.yysscoreboard.configuration.PlayerConfig;
 import com.github.euonmyoji.yysscoreboard.configuration.PluginConfig;
 import com.github.euonmyoji.yysscoreboard.configuration.ScoreBoardConfig;
+import com.github.euonmyoji.yysscoreboard.data.DisplayIDData;
 import com.github.euonmyoji.yysscoreboard.manager.LanguageManager;
 import com.github.euonmyoji.yysscoreboard.manager.TaskManager;
 import com.github.euonmyoji.yysscoreboard.util.Util;
@@ -136,6 +137,22 @@ public class YysScoreBoardCommand {
             })
             .build();
 
+    private static final CommandSpec DEBUG = CommandSpec.builder()
+            .permission("yysscoreboard.admin.command.debug")
+            .arguments(onlyOne(playerOrSource(Text.of("player"))))
+            .executor((src, args) -> {
+                Player p = args.<Player>getOne("player").orElseThrow(NoSuchElementException::new);
+                src.sendMessage(Text.of("Player: " + p.getName() + "(UUID:" + p.getUniqueId() + ")"));
+                DisplayIDData data = TaskManager.usingCache.get(p.getUniqueId());
+                src.sendMessage(Text.of("using Objective: " + data.objectiveID));
+                src.sendMessage(Text.of("using Tab: " + data.tabID));
+                src.sendMessage(Text.of("is Immutable: " + data.immutable));
+                src.sendMessage(Text.of("Scoreboard:" + p.getScoreboard()));
+                src.sendMessage(Text.of("Off:" + GlobalPlayerConfig.list.contains(p.getUniqueId())));
+                return CommandResult.empty();
+            })
+            .build();
+
     private static final CommandSpec USE = CommandSpec.builder()
             .permission("yysscoreboard.command.use")
             .arguments(onlyOne(userOrSource(Text.of("user"))),
@@ -210,5 +227,6 @@ public class YysScoreBoardCommand {
             .child(TOGGLE, "toggle")
             .child(USE, "use")
             .child(CLEAR, "clear")
+            .child(DEBUG, "debug")
             .build();
 }
