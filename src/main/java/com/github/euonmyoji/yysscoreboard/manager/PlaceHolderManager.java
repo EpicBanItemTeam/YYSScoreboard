@@ -6,6 +6,7 @@ import me.rojo8399.placeholderapi.PlaceholderService;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.serializer.TextSerializers;
 
 import javax.annotation.Nullable;
 import java.util.regex.Matcher;
@@ -15,6 +16,11 @@ import java.util.regex.Matcher;
  */
 public class PlaceHolderManager implements TextManager {
     private static PlaceHolderManager instance;
+    public final PlaceholderService service;
+
+    private PlaceHolderManager() {
+        service = Sponge.getServiceManager().provideUnchecked(PlaceholderService.class);
+    }
 
     public static PlaceHolderManager getInstance() {
         if (instance == null) {
@@ -23,22 +29,22 @@ public class PlaceHolderManager implements TextManager {
         return instance;
     }
 
-    public final PlaceholderService service;
-
     @Override
     public Text toText(String s, @Nullable Player p) {
         if (s == null) {
             return Text.EMPTY;
         }
         Matcher matcher = PlaceholderService.DEFAULT_PATTERN.matcher(s);
-        if(matcher.find()) {
-            if(PluginConfig.isStaticMode) {
+        if (matcher.find()) {
+            if (PluginConfig.isStaticMode) {
                 for (int i = 0; i < matcher.groupCount(); i++) {
                     String v = matcher.group(i);
-                    Object o = service.parse(v, null,null);
-                    if(o != null) {
-                        if(o instanceof Number) {
-                            s = s.replace(v,String.format("%2f",((Number) o).doubleValue()));
+                    Object o = service.parse(v, null, null);
+                    if (o != null) {
+                        if (o instanceof Number) {
+                            s = s.replace(v, String.format("%2f", ((Number) o).doubleValue()));
+                        } else if (o instanceof Text) {
+                            s = s.replace(v, TextSerializers.FORMATTING_CODE.serialize(((Text) o)));
                         } else {
                             s = s.replace(v, o.toString());
                         }
@@ -47,10 +53,10 @@ public class PlaceHolderManager implements TextManager {
             } else {
                 for (int i = 0; i < matcher.groupCount(); i++) {
                     String v = matcher.group(i);
-                    Object o = service.parse(v, p,p);
-                    if(o != null) {
-                        if(o instanceof Number) {
-                            s = s.replace(v,String.format("%2f",((Number) o).doubleValue()));
+                    Object o = service.parse(v, p, p);
+                    if (o != null) {
+                        if (o instanceof Number) {
+                            s = s.replace(v, String.format("%2f", ((Number) o).doubleValue()));
                         } else {
                             s = s.replace(v, o.toString());
                         }
@@ -59,9 +65,5 @@ public class PlaceHolderManager implements TextManager {
             }
         }
         return Util.toText(s);
-    }
-
-    private PlaceHolderManager() {
-        service = Sponge.getServiceManager().provideUnchecked(PlaceholderService.class);
     }
 }
