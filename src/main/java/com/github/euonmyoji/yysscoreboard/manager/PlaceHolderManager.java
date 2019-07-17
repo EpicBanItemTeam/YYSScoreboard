@@ -35,35 +35,25 @@ public class PlaceHolderManager implements TextManager {
             return Text.EMPTY;
         }
         Matcher matcher = PlaceholderService.DEFAULT_PATTERN.matcher(s);
+        if (PluginConfig.isStableMode) {
+            p = null;
+        }
         if (matcher.find()) {
-            if (PluginConfig.isStaticMode) {
-                for (int i = 0; i < matcher.groupCount(); i++) {
-                    String v = matcher.group(i);
-                    Object o = service.parse(v, null, null);
-                    if (o != null) {
-                        if (o instanceof Number) {
-                            s = s.replace(v, String.format("%2f", ((Number) o).doubleValue()));
-                        } else if (o instanceof Text) {
-                            s = s.replace(v, TextSerializers.FORMATTING_CODE.serialize(((Text) o)));
-                        } else {
-                            s = s.replace(v, o.toString());
-                        }
-                    }
-                }
-            } else {
-                for (int i = 0; i < matcher.groupCount(); i++) {
-                    String v = matcher.group(i);
-                    Object o = service.parse(v, p, p);
-                    if (o != null) {
-                        if (o instanceof Number) {
-                            s = s.replace(v, String.format("%2f", ((Number) o).doubleValue()));
-                        } else {
-                            s = s.replace(v, o.toString());
-                        }
+            for (int i = 0; i < matcher.groupCount(); i++) {
+                String v = matcher.group(i);
+                Object o = service.parse(v, p, p);
+                if (o != null) {
+                    if (o instanceof Number) {
+                        s = s.replace(v, String.format("%2f", ((Number) o).doubleValue()));
+                    } else if (o instanceof Text) {
+                        s = s.replace(v, TextSerializers.FORMATTING_CODE.serialize(((Text) o)));
+                    } else {
+                        s = s.replace(v, o.toString());
                     }
                 }
             }
         }
+
         return Util.toText(s);
     }
 }
