@@ -39,7 +39,7 @@ public final class ScoreBoardConfig {
     private static CommentedConfigurationNode cfg;
     private static ConfigurationLoader<CommentedConfigurationNode> loader;
     private static Scoreboard staticScoreBoard;
-    private static WeakHashMap<UUID, Scoreboard> cache = new WeakHashMap<>();
+    private static final WeakHashMap<UUID, Scoreboard> cache = new WeakHashMap<>();
 
     private ScoreBoardConfig() {
         throw new UnsupportedOperationException();
@@ -215,7 +215,7 @@ public final class ScoreBoardConfig {
     private static void checkUpdate() {
         int version = cfg.getNode(VERSION_KEY).getInt(0);
         if (version != CONFIG_VERSION) {
-            YysScoreBoard.logger.warn("The config is out-of-date (version :0) and latest version is ", CONFIG_VERSION);
+            YysScoreBoard.logger.warn("The config is out-of-date (version: 0) and latest version is {}", CONFIG_VERSION);
             YysScoreBoard.logger.warn("backup config now");
 
             Path backupDir = defaultCfgDir.resolve("oldConfig");

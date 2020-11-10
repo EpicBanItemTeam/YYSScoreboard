@@ -7,6 +7,7 @@ import org.spongepowered.api.Sponge;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.PropertyResourceBundle;
@@ -75,7 +76,7 @@ public class LanguageManager {
             lang = PluginConfig.getUsingLang();
             langFile = PluginConfig.cfgDir.resolve("lang/" + lang + ".lang");
             check();
-            res = new PropertyResourceBundle(Files.newBufferedReader(langFile, Charset.forName("UTF8")));
+            res = new PropertyResourceBundle(Files.newBufferedReader(langFile, StandardCharsets.UTF_8));
         } catch (IOException e) {
             YysScoreBoard.logger.error("reload language file error!", e);
         }

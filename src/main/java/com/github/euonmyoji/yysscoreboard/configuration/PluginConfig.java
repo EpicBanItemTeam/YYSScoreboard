@@ -146,10 +146,10 @@ public final class PluginConfig {
                 .orElse("The default tab&scoreboard delay|update tick"));
 
         generalNode.getNode("scoreboard-mode").setComment("Plugin work mode" +
-                "\n·async-something: Do something async (not in main thread)" +
+                "\n·async-something: Do something async (not in server's main thread)" +
                 "\n·cache-scoreboard: Cache player's only scoreboard in a hash map" +
-                "\n·same-score: Scoreboard whether have same score or not" +
-                "\n·stable: GetScoreboard from player using instead of building new one" +
+                "\n·same-score: Scoreboard whether have the same score objectives or not" +
+                "\n·stable: Get the scoreboard from the player that is using one instead of building new one" +
                 "\n·static: Player may use the same scoreboard and won't parse player placeholder");
 
         cfg.getNode("extra", "parallelGoal").setComment("The size of something is bigger than this will parallel");

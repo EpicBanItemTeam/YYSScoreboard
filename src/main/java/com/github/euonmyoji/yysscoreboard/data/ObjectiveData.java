@@ -109,8 +109,8 @@ public class ObjectiveData {
     }
 
     private static class ScoreRawData {
-        private String text;
-        private int score;
+        private final String text;
+        private final int score;
 
         private ScoreRawData(String s, int slot) {
             this.text = s;

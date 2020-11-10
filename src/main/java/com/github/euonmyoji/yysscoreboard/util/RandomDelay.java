@@ -32,8 +32,8 @@ public class RandomDelay {
     }
 
     private class Range {
-        private int min;
-        private int max;
+        private final int min;
+        private final int max;
 
         private Range(String[] arg) throws NumberFormatException {
             if (delay != -1) {
