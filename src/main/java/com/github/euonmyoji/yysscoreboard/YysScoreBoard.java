@@ -74,7 +74,7 @@ public class YysScoreBoard {
     @Listener
     public void onStarting(GameStartingServerEvent event) {
         //code is copy and paste
-        //so there is no ifPresnet
+        //so there is no ifPresent
         Scoreboard scoreboard = Sponge.getServer().getServerScoreboard().orElse(null);
         if (scoreboard != null) {
             scoreboard.getObjectives().stream()
